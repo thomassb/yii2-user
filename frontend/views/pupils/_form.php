@@ -5,7 +5,7 @@ use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use kartik\widgets\Select2;
 
-use common\models\Classes;
+use frontend\models\Classes;
 /* @var $this yii\web\View */
 /* @var $model common\models\Pupils */
 /* @var $form yii\widgets\ActiveForm */
@@ -21,7 +21,7 @@ use common\models\Classes;
 
     <?=$form->field($model, 'ClassID')->widget(Select2::classname(), [
     'data' => ArrayHelper::map(Classes::ClassList(), 'ID', 'ClassName'),
-    'options' => ['placeholder' => 'Select a class ...'],
+    'options' => ['placeholder' => Yii::t('app', 'Select a class ...')],
     'pluginOptions' => [
         'allowClear' => true
     ],
@@ -29,10 +29,22 @@ use common\models\Classes;
    
 
     <?= $form->field($model, 'DoB')->textInput() ?>
+Root user only
+<?=$form->field($model, 'UserID')->widget(Select2::classname(), [
+    'data' => ArrayHelper::map(Classes::ClassList(), 'ID', 'ClassName'),
+    'options' => ['placeholder' => Yii::t('app', 'Select user ...')],
+    'pluginOptions' => [
+        'allowClear' => true
+    ],
+]);?>
+<?=$form->field($model, 'SchoolID')->widget(Select2::classname(), [
+    'data' => ArrayHelper::map(Classes::ClassList(), 'ID', 'ClassName'),
+    'options' => ['placeholder' => Yii::t('app', 'Select School ...')],
+    'pluginOptions' => [
+        'allowClear' => true
+    ],
+]);?>
 
-    <?= $form->field($model, 'UserID')->textInput() ?>
-
-    <?= $form->field($model, 'SchoolID')->textInput() ?>
 
 
 

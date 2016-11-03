@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models;
+namespace frontend\models;
 
 use Yii;
 
@@ -50,5 +50,9 @@ class Subjects extends \yii\db\ActiveRecord
     public function getSubjectAreas()
     {
         return $this->hasMany(SubjectAreas::className(), ['SubjectID' => 'ID']);
+    }
+      public static function SubjectList(){
+        //TODO:: Add school variable 
+        return Subjects::find()->all();
     }
 }

@@ -5,7 +5,7 @@ namespace frontend\models\search;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\Pupils as PupilsModel;
+use frontend\models\Pupils as PupilsModel;
 
 /**
  * Pupils represents the model behind the search form about `common\models\Pupils`.
@@ -55,8 +55,8 @@ class Pupils extends PupilsModel {
         $dataProvider->sort->attributes['ClassName'] = [
             // The tables are the ones our relation are configured to
             // in my case they are prefixed with "tbl_"
-            'asc' => [\common\models\Classes::tableName() . '.classname' => SORT_ASC],
-            'desc' => [\common\models\Classes::tableName() . '.classname' => SORT_DESC],
+            'asc' => [\frontend\models\Classes::tableName() . '.classname' => SORT_ASC],
+            'desc' => [\frontend\models\Classes::tableName() . '.classname' => SORT_DESC],
         ];
 
         $this->load($params);
@@ -79,7 +79,7 @@ class Pupils extends PupilsModel {
 
         $query->andFilterWhere(['like', 'FirstName', $this->FirstName])
                 ->andFilterWhere(['like', 'LastName', $this->LastName])
-                ->andFilterWhere(['like', \common\models\Classes::tableName() . '.classname', $this->ClassName])
+                ->andFilterWhere(['like', \frontend\models\Classes::tableName() . '.classname', $this->ClassName])
         ;
 
         return $dataProvider;

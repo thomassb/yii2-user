@@ -1,53 +1,170 @@
 <?php
-
 /* @var $this yii\web\View */
 
-$this->title = 'My Yii Application';
+$this->title = 'Dashboard';
 ?>
 <div class="site-index">
+    <div class="col-sm-6">
+<div class="box box-solid ">
+            <div class="box-header bg-blue-gradient">
+                <i class="fa fa-calendar"></i>
 
-    <div class="jumbotron">
-        <h1>Congratulations!</h1>
-
-        <p class="lead">You have successfully created your Yii-powered application.</p>
-
-        <p><a class="btn btn-lg btn-success" href="http://www.yiiframework.com">Get started with Yii</a></p>
-    </div>
-
-    <div class="body-content">
-
-        <div class="row">
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
+                <h3 class="box-title">Bulletins</h3>
+                <!-- tools box -->
+                <div class="pull-right box-tools">
+                    <!-- button with a dropdown -->
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-bars"></i></button>
+                        <ul class="dropdown-menu pull-right" role="menu">
+                            <li><a href="#">Add bulletin item</a></li>
+                            <li><a href="#">Edit bulletins</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">View all bulletins</a></li>
+                        </ul>
+                    </div>
+                    <button type="button" class="btn btn-success btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-success btn-sm" data-widget="remove"><i class="fa fa-times"></i>
+                    </button>
+                </div>
+                <!-- /. tools -->
             </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
+            <!-- /.box-header -->
+            <div class="box-body ">
+               <div id="timeline" class="tab-pane active">
+                <!-- The timeline -->
+                <ul class="timeline timeline-inverse">
+                  <!-- timeline time label -->
+                  <li class="time-label">
+                        <span class="bg-red">
+                          10 Sep. 2016
+                        </span>
+                  </li>
+                  <!-- /.timeline-label -->
+                  <!-- timeline item -->
+                  <li>
+                    <i class="fa fa-envelope bg-blue"></i>
 
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
+                    <div class="timeline-item">
+                      <span class="time"><i class="fa fa-clock-o"></i> 12:05</span>
 
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
+                      <h3 class="timeline-header"><a href="#">Lorem ipsum </a></h3>
+
+                      <div class="timeline-body">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque 
+                        in nisl bibendum ante pellentesque aliquam. Integer hendrerit pharetra 
+                        sapien eget aliquam. Sed nec ante eros. Curabitur vel nisi non sapien 
+                        pulvinar pulvinar. Duis sodales, neque vel lobortis laoreet, nunc mi accumsan
+                        ....
+                      </div>
+                      <div class="timeline-footer">
+                        <a class="btn btn-primary btn-xs">Read more</a>
+                       
+                      </div>
+                    </div>
+                  </li>
+                    <li class="time-label">
+                        <span class="bg-red">
+                          8 Sep. 2016
+                        </span>
+                  </li>
+                          <li>
+                    <i class="fa fa-envelope bg-blue"></i>
+
+                    <div class="timeline-item">
+                      <span class="time"><i class="fa fa-clock-o"></i> 12:05</span>
+
+                      <h3 class="timeline-header"><a href="#">Lorem ipsum </a></h3>
+
+                      <div class="timeline-body">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque 
+                        in nisl bibendum ante pellentesque aliquam. Integer hendrerit pharetra 
+                        sapien eget aliquam. Sed nec ante eros. Curabitur vel nisi non sapien 
+                        pulvinar pulvinar. Duis sodales, neque vel lobortis laoreet, nunc mi accumsan
+                        ....
+                      </div>
+                      <div class="timeline-footer">
+                        <a class="btn btn-primary btn-xs">Read more</a>
+                       
+                      </div>
+                    </div>
+                  </li>
+                 
+                  <li>
+                    <i class="fa fa-clock-o bg-gray"></i>
+                  </li>
+                </ul>
+              </div>
             </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
+            <!-- /.box-body -->
+            <div class="box-footer text-black">
 
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/extensions/">Yii Extensions &raquo;</a></p>
+                <!-- /.row -->
             </div>
         </div>
-
     </div>
+    <div class="col-md-6">
+        <div class="box box-solid bg-green-gradient">
+            <div class="box-header">
+                <i class="fa fa-calendar"></i>
+
+                <h3 class="box-title">Calendar</h3>
+                <!-- tools box -->
+                <div class="pull-right box-tools">
+                    <!-- button with a dropdown -->
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-bars"></i></button>
+                        <ul class="dropdown-menu pull-right" role="menu">
+                            <li><a href="#">Add new event</a></li>
+                            <li><a href="#">Clear events</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">View calendar</a></li>
+                        </ul>
+                    </div>
+                    <button type="button" class="btn btn-success btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-success btn-sm" data-widget="remove"><i class="fa fa-times"></i>
+                    </button>
+                </div>
+                <!-- /. tools -->
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body no-padding">
+                <!--The calendar -->
+                <div id="calendar" class="home-datepicker">
+               <?php
+               echo kartik\widgets\DatePicker::widget([
+    'name' => 'dp_5',
+    'type' => kartik\widgets\DatePicker::TYPE_INLINE,
+   // 'value' => 'Tue, 23-Feb-1982',
+    'pluginOptions' => [
+        'format' => 'D, dd-M-yyyy',
+      
+    ],
+    'options' => [
+        'style'=>'width:100%',
+        // you can hide the input by setting the following
+         'class' => 'hide '
+    ]
+]);?>
+               </div>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer text-black">
+
+                <!-- /.row -->
+            </div>
+        </div>
+    </div>
+
+
 </div>
+<?php
+//$this->registerJs("
+//    $(function () {
+//     $('#calendar').datepicker();
+// })"
+//, yii\web\View::POS_END, 'search');
+?>

@@ -24,21 +24,33 @@ class SiteController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['logout', 'signup'],
+                'access' => [
+                'class' => \yii\filters\AccessControl::className(),
+                'only' => ['index', 'create', 'update', 'view'],
                 'rules' => [
+                    // allow authenticated users
                     [
-                        'actions' => ['signup'],
-                        'allow' => true,
-                        'roles' => ['?'],
-                    ],
-                    [
-                        'actions' => ['logout'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
+                // everything else is denied
                 ],
+           
+//            'access' => [
+//                'class' => AccessControl::className(),
+//                'only' => ['logout', 'signup'],
+//                'rules' => [
+//                    [
+//                        'actions' => ['signup'],
+//                        'allow' => true,
+//                        'roles' => ['?'],
+//                    ],
+//                    [
+//                        'actions' => ['*'],
+//                        'allow' => true,
+//                        'roles' => ['@'],
+//                    ],
+//                ],
             ],
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -72,6 +84,7 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+      
         return $this->render('index');
     }
 

@@ -3,11 +3,12 @@
 namespace frontend\controllers;
 
 use Yii;
-use common\models\Pupils;
+use frontend\models\Pupils;
 use frontend\models\search\Pupils as PupilsSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Json;
 
 /**
  * PupilsController implements the CRUD actions for Pupils model.
@@ -120,5 +121,23 @@ class PupilsController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+    public function actionAjaxClassPupil() {
+        $out = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+            if ($parents != null) {
+                $cat_id = $parents[0];
+                $r = \frontend\models\Pupils::find()->where(['ClassID' => $cat_id])->all();
+                $out = [];
+                foreach ($r as $value) {
+                    $out[] = ['id' => $value->ID, 'name' => $value->FullName];
+                }
+
+                echo Json::encode(['output' => $out, 'selected' => '']);
+                return;
+            }
+        }
+        echo Json::encode(['output' => '', 'selected' => '']);
     }
 }

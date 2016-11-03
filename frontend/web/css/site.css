@@ -99,6 +99,15 @@ a.desc:after {
 .nav > li > form {
     padding: 8px;
 }
+/*
+Home
+*/
+.home-datepicker .datepicker.datepicker-inline {
+    width: 100%;
+}
+.home-datepicker table {
+    width: 100%;
+}
 
 @media(max-width:768px) {
 	.nav li > form {
@@ -108,4 +117,32 @@ a.desc:after {
 
 .nav > li > form > button:hover {
     text-decoration: none;
+}
+
+@media screen and (max-width: 480px) {
+
+thead {display: none;}
+
+tr td:first-child {white-space: pre-wrap !important;}
+
+tbody td:before { 
+    content: attr(data-th); 
+display: block;
+  }
+}
+
+.border-bottom {
+    border-bottom: 1px solid #e7eaec !important;
+}
+.page-heading {
+    border-top: 0 none;
+    padding: 0 10px 20px;
+}
+.white-bg {
+    background-color: #ffffff;
+}
+.breadcrumb {
+    background-color: #ffffff;
+    margin-bottom: 0;
+    padding: 0;
 }

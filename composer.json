@@ -18,7 +18,12 @@
         "yiisoft/yii2": ">=2.0.6",
         "yiisoft/yii2-bootstrap": "*",
         "yiisoft/yii2-swiftmailer": "*",
-        "kartik-v/yii2-widgets": "*"
+        "kartik-v/yii2-widgets": "*",
+        "dmstr/yii2-adminlte-asset": "2.*",
+        "dektrium/yii2-user": "0.9.*@dev",
+        "kartik-v/yii2-dynagrid": "@dev",
+        "kartik-v/yii2-mpdf": "*",
+        "kartik-v/yii2-editable": "*"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",

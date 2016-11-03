@@ -5,7 +5,7 @@ namespace frontend\models\search;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\Classes as ClassesModel;
+use frontend\models\Classes as ClassesModel;
 
 /**
  * Classes represents the model behind the search form about `common\models\Classes`.
