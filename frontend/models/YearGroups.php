@@ -13,21 +13,19 @@ use Yii;
  *
  * @property KeyStageYearGroups $keyStageYearGroups
  */
-class YearGroups extends \yii\db\ActiveRecord
-{
+class YearGroups extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'YearGroups';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['YearGroup'], 'required'],
             [['DaysOld'], 'integer'],
@@ -38,8 +36,7 @@ class YearGroups extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'ID' => 'ID',
             'YearGroup' => 'Year Group',
@@ -50,8 +47,20 @@ class YearGroups extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getKeyStageYearGroups()
-    {
+    public function getKeyStageYearGroups() {
         return $this->hasOne(KeyStageYearGroups::className(), ['YearGroupID' => 'ID']);
     }
+
+    public static function getYearGroup($dob) {
+        $cdate = strtotime($dob);
+
+        $today = time();
+        $difference = $today - $cdate;
+        $daysold = floor($difference / 60 / 60 / 24);
+        $yeargroup = YearGroups::find()->where(['<=', 'DaysOld', $daysold])->orderBy('DaysOld desc')->one();
+      
+        return $yeargroup;
+       
+    }
+
 }

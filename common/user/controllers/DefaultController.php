@@ -1,6 +1,6 @@
 <?php
 
-namespace  common\user\controllers;
+namespace common\user\controllers;
 
 use Yii;
 use yii\web\Controller;
@@ -8,6 +8,7 @@ use yii\web\Response;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\widgets\ActiveForm;
+use yii\imagine\Image;
 
 /**
  * Default controller for User module
@@ -66,13 +67,13 @@ class DefaultController extends Controller {
      * Display login page
      */
     public function actionLogin() {
-      
+
         /** @var \common\user\models\forms\LoginForm $model */
         $this->layout = '//main-login';
         // load post data and login
         $model = Yii::$app->getModule("user")->model("LoginForm");
         if ($model->load(Yii::$app->request->post()) && $model->login(Yii::$app->getModule("user")->loginDuration)) {
-            
+
             return $this->goBack(Yii::$app->getModule("user")->loginRedirect);
         }
 
@@ -271,9 +272,44 @@ class DefaultController extends Controller {
 
         // validate for normal request
         if ($loadedPost && $profile->validate()) {
-            $profile->save(false);
-            Yii::$app->session->setFlash("Profile-success", Yii::t("user", "Profile updated"));
+            $image = \yii\web\UploadedFile::getInstance($profile, 'image');
+
+            // store the source file name
+            // $model->filename = $image->name;
+            $ext = end((explode(".", $image->name)));
+
+            // generate a unique file name
+            $profile->avatar = Yii::$app->security->generateRandomString() . ".{$ext}";
+
+            // the path to save file, you can set an uploadPath
+            // in Yii::$app->params (as used in example below)
+            //  $theme='sheringham';
+            // $this->directoryAsset2 = \Yii::$app->assetManager->getPublishedUrl('@web/themes/'.$theme.'/images');
+            $path = Yii::$app->basePath . '/web/uploads/users/' . $profile->avatar;
+
+            if ($profile->save(false)) {
+                if ($image->saveAs($path)) {
+                   // Image::getImagine()
+//->open($path)
+//->thumbnail(new \Imagine\Image\Box(215, 215))
+//->save($path, ['quality' => 90]);
+                    Image::thumbnail($path,215, 215)
+                            ->save($path, ['quality' => 70]);
+                    Yii::$app->session->setFlash("Profile-success", Yii::t("user", "Profile updated"));
+                }
+            } else {
+                Yii::$app->session->setFlash("Profile-error", Yii::t("user", "Error Uploading Avatar"));
+            }
             return $this->refresh();
+//            $im = new imagick($image);
+//
+//// convert to png
+//$im->setImageFormat('png');
+//
+////write image on server
+//$im->writeImage($image .".png");
+//$im->clear();
+//$im->destroy(); 
         }
 
         // render

@@ -69,4 +69,9 @@ class Strands extends \yii\db\ActiveRecord
     {
         return $this->hasMany(SubjectAreas::className(), ['AreaID' => 'ID']);
     }
+        public function getSubject()
+    {
+        return $this->hasMany(Subjects::className(), ['ID' => 'SubjectID'])
+                  ->via('subjectAreas');
+    }
 }

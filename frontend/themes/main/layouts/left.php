@@ -1,3 +1,7 @@
+<?php
+
+use yii\bootstrap\Html;
+?>
 <aside class="main-sidebar">
 
     <section class="sidebar">
@@ -5,10 +9,11 @@
         <!-- Sidebar user panel -->
         <div class="user-panel">
             <div class="pull-left image">
-                <img src="<?= $directoryAsset ?>/img/avatar.png" class="img-circle" alt="User Image"/>
+                <?= yii\bootstrap\Html::img('@web/uploads/users/' . \Yii::$app->user->identity->profile->myavatar, ['class' => 'img-circle square-215', 'alt' => "User Image"]) ?>
+
             </div>
             <div class="pull-left info">
-                <p><?=Yii::$app->user->displayName ?></p>
+                <p><?= Yii::$app->user->identity->profile->full_name ?></p>
 
                 <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
@@ -43,10 +48,12 @@
                         ['label' => 'Reports',
                             'icon' => 'fa  fa-file',
                             'url' => '#',
-//                                'items' => [
-//                                     ['label' => 'View', 'icon' => 'fa  fa-file', 'url' => ['/page']],
-//                                    ['label' => 'New', 'icon' => 'fa fa-plus', 'url' => ['/page/create'], 'visible'=>Yii::$app->user->can("admin")],
-//                                ]
+                            'items' => [
+                                ['label' => 'Summary Report', 'icon' => 'fa  fa-file', 'url' => ['/report/summary']],
+                                ['label' => 'Detailed Report', 'icon' => 'fa  fa-file', 'url' => ['/report/detailed']],
+                                ['label' => 'Starting Levels', 'icon' => 'fa  fa-file', 'url' => ['/report/starting-level']],
+                                ['label' => 'Assessment Grid', 'icon' => 'fa  fa-file', 'url' => ['/report/assessment-grid']],
+                            ]
                         ],
 //                     ['label' => 'Insures',
 //                                'icon' => 'fa fa-briefcase',
@@ -58,18 +65,20 @@
                         ['label' => 'Admin',
                             'icon' => 'fa fa-circle-o',
                             'url' => '#',
-                            'visible' => true, //Yii::$app->user->can("admin"),
+                            'visible' => Yii::$app->user->can("admin"),
                             'items' => [
-                                ['label' => 'Classes', 'icon' => 'fa ', 'url' => ['/classes']],
+                                ['label' => 'Targets', 'icon' => 'fa fa-bullseye', 'url' => ['/targets']],
+                                ['label' => 'Classes', 'icon' => 'fa fa-users', 'url' => ['/classes']],
                                 ['label' => 'Pupils', 'icon' => 'fa fa-user', 'url' => ['/pupils']],
-                                ['label' => 'Subjects', 'icon' => 'fa fa-tag', 'url' => ['#']],
-                                ['label' => 'Statements', 'icon' => 'fa fa-file-code-o', 'url' => ['/statements']],
-                                ['label' => 'Users', 'icon' => 'fa fa-file-code-o', 'url' => ['#']],
+                                ['label' => 'Subjects', 'icon' => 'fa fa-book', 'url' => ['/subject']],
+                                ['label' => 'Strands', 'icon' => 'fa fa-tag', 'url' => ['/strand']],
+                                ['label' => 'Statements', 'icon' => 'fa  fa-tags', 'url' => ['/statements']],
+                                ['label' => 'Users', 'icon' => 'fa fa-user-circle', 'url' => ['/user/admin']],
                             ]],
-                        // ['label' => 'Menu Yii2', 'options' => ['class' => 'header']],
-                        //  ['label' => 'Gii', 'icon' => 'fa fa-file-code-o', 'url' => ['/gii']],
-                        //   ['label' => 'Debug', 'icon' => 'fa fa-dashboard', 'url' => ['/debug']],
-                        //['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
+                    // ['label' => 'Menu Yii2', 'options' => ['class' => 'header']],
+                    //  ['label' => 'Gii', 'icon' => 'fa fa-file-code-o', 'url' => ['/gii']],
+                    //   ['label' => 'Debug', 'icon' => 'fa fa-dashboard', 'url' => ['/debug']],
+                    //['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
 //                    [
 //                        'label' => 'Same tools',
 //                        'icon' => 'fa fa-share',
@@ -100,7 +109,12 @@
                 ]
         )
         ?>
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
 
+<?= Html::img($url = $this->theme->baseUrl . '/images/logo.png', ['class' => 'img-responsive img-rounded']) ?>
+            </div>
+        </div>
     </section>
 
 </aside>

@@ -12,7 +12,19 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="pupils-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+ <div class="box box-default">
+        <div class="box-header with-border">
+            <h3 class="box-title"><?= Html::encode($this->title) ?></h3>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse">
+                    <i class="fa fa-minus"></i>
+                </button>
+                <!--            <button class="btn btn-box-tool" data-widget="remove">
+                                <i class="fa fa-remove"></i>
+                            </button>-->
+            </div>
+        </div>
+        <div class="box-body">
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
@@ -35,8 +47,16 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'UserID',
             // 'SchoolID',
             // 'Created',
-            ['class' => 'yii\grid\ActionColumn'],
+            ['class' => 'yii\grid\ActionColumn', 'template' => '{update}  {delete}',
+                    ],
+            
+            
         ],
+        'rowOptions' => function ($model, $key, $index, $grid) {
+                return ['class'=>'clickable-row', 'onclick' => 'alert(this.id);'];
+        },
     ]);
     ?>
+        </div>
+ </div>
 </div>

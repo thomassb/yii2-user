@@ -13,12 +13,13 @@ use frontend\models\Statements as StatementsModel;
 class Statements extends StatementsModel {
 
    // public $SubjectID;
+    public $displayAllLevels = 0;
     /**
      * @inheritdoc
      */
     public function rules() {
         return [
-            [['ID', 'StrandID', 'LevelID','SubjectID','PupilID'], 'integer'],
+            [['ID', 'StrandID', 'LevelID','SubjectID','PupilID','displayAllLevels'], 'integer'],
             [['StrandID', 'LevelID','SubjectID','PupilID'],'required'],
             [['StatementText'], 'safe'],
         ];

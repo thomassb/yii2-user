@@ -69,9 +69,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                 return $statusDropdown[$model->status];
                             },
                         ],
+                                    'username',
                         'email:email',
                         'profile.full_name',
-                        'create_time',
+                       // 'create_time',
                         // 'new_email:email',
                         // 'username',
                         // 'password',

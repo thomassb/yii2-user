@@ -19,11 +19,22 @@ class ClassesController extends Controller {
      * @inheritdoc
      */
     public function behaviors() {
-        return [
+       return [
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['POST'],
+                    'delete' => ['post'],
+                ],
+            ],
+            'access' => [
+                'class' => \yii\filters\AccessControl::className(),
+                'rules' => [
+                    // allow authenticated users
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                // everything else is denied
                 ],
             ],
         ];

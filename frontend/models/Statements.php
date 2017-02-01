@@ -92,17 +92,22 @@ class Statements extends \yii\db\ActiveRecord {
         }
         return $this->hasOne(Strands::className(), ['ID' => 'StrandID']);
     }
+        public function getStrands() {
+
+        return $this->hasOne(Strands::className(), ['ID' => 'StrandID']);
+    }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getLevel() {
-          if (!$this->LevelID) {
+        if (!$this->LevelID) {
             return new Levels();
-      }
+        }
         return $this->hasOne(Levels::className(), ['ID' => 'LevelID']);
     }
-        public function getLevels() {
+
+    public function getLevels() {
 
         return $this->hasOne(Levels::className(), ['ID' => 'LevelID']);
     }

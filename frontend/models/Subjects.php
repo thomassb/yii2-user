@@ -43,7 +43,13 @@ class Subjects extends \yii\db\ActiveRecord
             'Subject' => 'Subject',
         ];
     }
-
+//   public static function find()
+//{
+//    return parent::find()->where(['=', self::tableName().'.SchoolID', \Yii::$app->user->identity->SchoolID]);
+//}
+//public static function delete() {
+//    return parent::delete()->where(['=', self::tableName().'.SchoolID', \Yii::$app->user->identity->SchoolID]);
+//}
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -52,7 +58,7 @@ class Subjects extends \yii\db\ActiveRecord
         return $this->hasMany(SubjectAreas::className(), ['SubjectID' => 'ID']);
     }
       public static function SubjectList(){
-        //TODO:: Add school variable 
+     
         return Subjects::find()->all();
     }
 }

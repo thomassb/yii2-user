@@ -66,4 +66,11 @@ class PupilStartingLevel extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Pupils::className(), ['ID' => 'PupilID']);
     }
+       /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLevel()
+    {
+        return $this->hasOne(Levels::className(), ['ID' => 'StartingLevel']);
+    }
 }

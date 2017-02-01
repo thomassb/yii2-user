@@ -7,14 +7,11 @@ use yii\helpers\ArrayHelper;
 use frontend\models\Classes;
 use yii\helpers\Url;
 use yii\bootstrap\Html;
-use kartik\form\ActiveForm;
-use yii\widgets\Pjax;
 use common\widgets\editable\EditableDatePickerAsset;
+use yii\web\JsExpression;
+$view = $this;
 
-
- $view = $this;
-       
-                    EditableDatePickerAsset::register($view);
+EditableDatePickerAsset::register($view);
 
 $this->title = Yii::t('app', 'Pupil Tracker');
 $this->params['breadcrumbs'][] = $this->title;
@@ -27,15 +24,15 @@ $this->params['breadcrumbs'][] = $this->title;
             <button class="btn btn-box-tool" data-widget="collapse">
                 <i class="fa fa-minus"></i>
             </button>
-            <button class="btn btn-box-tool" data-widget="remove">
+<!--            <button class="btn btn-box-tool" data-widget="remove">
                 <i class="fa fa-remove"></i>
-            </button>
+            </button>-->
         </div>
     </div>
     <div class="box-body">
         <div class="col-sm-12">
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-md-6">
                     <div class="form-group">
                         <?=
                         Select2::widget([
@@ -52,7 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>  
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-md-6">
                     <div class="form-group">
                         <?php
 //                        echo $form->field($searchModel, 'PupilID')->widget(DepDrop::classname(), [
@@ -70,21 +67,28 @@ $this->params['breadcrumbs'][] = $this->title;
 //                        ]);
                         ?>
                         <?php
-                       echo  DepDrop::widget([
-//                            'name' => 'pupilid',
-//                            'id'=>'pupilid',
+                          $url = \yii\helpers\Url::to(['/pupils/ajax-pupil-search']);
+                        $pupilInital= empty($reportForm->pupilID) ? '' : Pupils::findOne($reportForm->pupilID)->FullName;
+                        echo Select2::widget([
                             'attribute' => 'PupilID',
                             'model' => $searchModel,
-                            'data' => ArrayHelper::map(\frontend\models\Pupils::PupilList(), 'ID', 'FullName'),
-                            'options' => ['placeholder' => 'Select a Pupil ....'],
-                            'type' => DepDrop::TYPE_SELECT2,
-                            'select2Options' => ['pluginOptions' => ['allowClear' => true]],
+                            'initValueText' => $pupilInital, // set the initial display text
+                            'options' => ['placeholder' => 'Search for a Pupil ...'],
                             'pluginOptions' => [
-                                'depends' => ['classid'],
-                                'url' => Url::to(['/pupils/ajax-class-pupil']),
-                                'loadingText' => 'Loading Pupils ...',
-                                'placeholder' => 'Select a Pupil ....'
-                            ]
+                                'allowClear' => true,
+                                'minimumInputLength' => 3,
+                                'language' => [
+                                    'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                                ],
+                                'ajax' => [
+                                    'url' => $url,
+                                    'dataType' => 'json',
+                                    'data' => new JsExpression('function(params) { return {q:params.term}; }')
+                                ],
+                                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                                'templateResult' => new JsExpression('function(pupilID) { return pupilID.text; }'),
+                                'templateSelection' => new JsExpression('function (pupilID) { return pupilID.text; }'),
+                            ],
                         ]);
                         ?>
                     </div>
@@ -92,7 +96,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
 
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-md-6">
                     <div class="form-group">
                         <?php
 //                         echo $form->field($searchModel, 'SubjectID')->widget(Select2::classname(), [
@@ -118,7 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-md-6">
                     <div class="form-group">
                         <?php
 //                        echo $form->field($searchModel, 'StrandID')->widget(DepDrop::classname(), [
@@ -133,11 +137,11 @@ $this->params['breadcrumbs'][] = $this->title;
 //                            ]
 //                        ]);
                         ?>
-                        
+
                         <?php
                         echo DepDrop::widget([
                             // 'name' => 'strandid',
-                            'id' => 'strandid',
+                           // 'id' => 'strandid',
                             'attribute' => 'StrandID',
                             'model' => $searchModel,
                             'options' => ['placeholder' => 'Select ...'],
@@ -147,7 +151,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'depends' => ['subjectid'],
                                 'url' => Url::to(['/strand/ajax-strand-subject']),
                                 'loadingText' => 'Loading Strands ...',
-                                'placeholder' => 'Select a Strand'
+                                'placeholder' => 'Select a Strand',
+                                'params'=>['statements-pupilid', 'statements-displayalllevels']
                             ]
                         ]);
                         ?>
@@ -155,7 +160,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-md-6">
                     <div class="form-group">
                         <?php
 //                        echo $form->field($searchModel, 'LevelID')->widget(DepDrop::classname(), [
@@ -176,27 +181,59 @@ $this->params['breadcrumbs'][] = $this->title;
                         echo DepDrop::widget([
                             //'name' => 'Statements[LevelID]',
                             'attribute' => 'LevelID',
-                            'id'=>'levelid',
-                           'model'=>$searchModel,
+                           // 'id' => 'levelid',
+                            'model' => $searchModel,
                             'options' => ['placeholder' => 'Select ...'],
                             'type' => DepDrop::TYPE_SELECT2,
                             'select2Options' => ['pluginOptions' => ['allowClear' => true]],
                             'pluginOptions' => [
-                                'depends' => ['subjectid','strandid'],
+                                'depends' => [ 'statements-pupilid','statements-strandid','subjectid' ],
                                 'url' => Url::to(['/level/ajax-level-strand']),
                                 'loadingText' => 'Loading Levels ...',
                                 'placeholder' => 'Select a Level',
-                               //  'params'=>['input-type-1', 'input-type-2']
-                            ]
+                                'params' => ['statements-pupilid', 'statements-displayalllevels']
+                ]
                         ]);
                         ?>
                     </div>
                 </div>
             </div>
+            <?php
+           /* if(Yii::$app->user->can("admin")):?>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+      
+                        <?php
+                        echo \common\classes\bootckbox::widget(['model' => $searchModel,
+                            'attribute' => 'displayAllLevels','id'=>'statements-displayalllevels',
+                             'options'=>[
+        'value'=>5,
+        'uncheck'=>7
+    ]]);
+                     
+                        ?>
+                    </div>
+                </div>
+            </div>
+            <?php else:{ 
+             //   echo \yii\helpers\Html::hiddenInput('Statements[displayAllLevels]','0',['id'=>'statements-displayalllevels']);
+            }
+            endif;
+            */
+             ?>
+            
+            <div class="row"><div class="col-md-6">
+                    <div class="form-group">
+                        <?= Html::button('Search', ['class' => 'btn btn-primary', 'id' => 'statment-search']) ?>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>
-<?= Html::button('Search', ['class' => 'btn btn-primary', 'id' => 'statment-search']) ?>
+
 
 
 
@@ -232,11 +269,12 @@ if(!$('#statements-pupilid').val()||
                                 'Statements[LevelID]': $('#statements-levelid').val(),
                                 'Statements[StrandID]': $('#statements-strandid').val(),
                                 'Statements[SubjectID]': $('#subjectid').val(),
+                                
                                 _csrf: '" . Yii::$app->request->getCsrfToken() . "' },
                                    
                                 success: function (data) {
                                 
-                                $('#pupil-tracking-table').append(data);
+                                $('#pupil-tracking-table').html(data);
                                 $('.kv-editable-link').popover();
                                 if(data.status=='success'){
                                 var output = [];

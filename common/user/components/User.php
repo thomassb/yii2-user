@@ -24,6 +24,7 @@ class User extends \yii\web\User
      */
     public $loginUrl = ["/user/login"];
 
+ 
     /**
      * @inheritdoc
      */
@@ -80,6 +81,13 @@ class User extends \yii\web\User
         /** @var \common\user\models\User $user */
         $user = $this->getIdentity();
         return $user ? $user->getDisplayName($default) : "";
+    }
+    
+    public function getSchoolName($default = "")
+    {
+        /** @var \common\user\models\User $user */
+        $user = $this->getIdentity();
+        return $user ? $user->getSchoolName() : "";
     }
 
     /**

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f7a42f45001bee7b2266584f6bc16f09",
-    "content-hash": "5def4e7d620cff2b345f9cf4442d0cb0",
+    "hash": "e1d394d6c246bbfedbcbe8f6ddc84a13",
+    "content-hash": "5be588f661a8aa67f7a94d401de4439a",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -554,6 +554,111 @@
             "time": "2016-07-16 12:58:58"
         },
         {
+            "name": "fortawesome/font-awesome",
+            "version": "v4.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FortAwesome/Font-Awesome.git",
+                "reference": "a8386aae19e200ddb0f6845b5feeee5eb7013687"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/a8386aae19e200ddb0f6845b5feeee5eb7013687",
+                "reference": "a8386aae19e200ddb0f6845b5feeee5eb7013687",
+                "shasum": ""
+            },
+            "require-dev": {
+                "jekyll": "1.0.2",
+                "lessc": "1.4.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.6.x-dev"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "OFL-1.1",
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dave Gandy",
+                    "email": "dave@fontawesome.io",
+                    "homepage": "http://twitter.com/davegandy",
+                    "role": "Developer"
+                }
+            ],
+            "description": "The iconic font and CSS framework",
+            "homepage": "http://fontawesome.io/",
+            "keywords": [
+                "FontAwesome",
+                "awesome",
+                "bootstrap",
+                "font",
+                "icon"
+            ],
+            "time": "2016-10-24 15:52:54"
+        },
+        {
+            "name": "imagine/imagine",
+            "version": "v0.6.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/avalanche123/Imagine.git",
+                "reference": "149041d2a1b517107bfe270ca2b1a17aa341715d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/avalanche123/Imagine/zipball/149041d2a1b517107bfe270ca2b1a17aa341715d",
+                "reference": "149041d2a1b517107bfe270ca2b1a17aa341715d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "sami/sami": "dev-master"
+            },
+            "suggest": {
+                "ext-gd": "to use the GD implementation",
+                "ext-gmagick": "to use the Gmagick implementation",
+                "ext-imagick": "to use the Imagick implementation"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.7-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Imagine": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bulat Shakirzyanov",
+                    "email": "mallluhuct@gmail.com",
+                    "homepage": "http://avalanche123.com"
+                }
+            ],
+            "description": "Image processing for PHP 5.3",
+            "homepage": "http://imagine.readthedocs.org/",
+            "keywords": [
+                "drawing",
+                "graphics",
+                "image manipulation",
+                "image processing"
+            ],
+            "time": "2015-09-19 16:54:05"
+        },
+        {
             "name": "kartik-v/bootstrap-fileinput",
             "version": "v4.3.4",
             "source": {
@@ -780,6 +885,60 @@
             "time": "2015-05-05 07:34:49"
         },
         {
+            "name": "kartik-v/yii2-date-range",
+            "version": "v1.6.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kartik-v/yii2-date-range.git",
+                "reference": "c7177cd89cc90772acc96a05fbf5996f67127e4c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kartik-v/yii2-date-range/zipball/c7177cd89cc90772acc96a05fbf5996f67127e4c",
+                "reference": "c7177cd89cc90772acc96a05fbf5996f67127e4c",
+                "shasum": ""
+            },
+            "require": {
+                "kartik-v/yii2-krajee-base": "*"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.6.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "kartik\\daterange\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Kartik Visweswaran",
+                    "email": "kartikv2@gmail.com",
+                    "homepage": "http://www.krajee.com/"
+                }
+            ],
+            "description": "An advanced Yii 2 date range picker input for based on bootstrap-daterangepicker plugin.",
+            "homepage": "https://github.com/kartik-v/yii2-date-range",
+            "keywords": [
+                "bootstrap",
+                "bootstrap 3",
+                "date",
+                "date-range",
+                "extension",
+                "range",
+                "time",
+                "widget",
+                "yii2"
+            ],
+            "time": "2016-07-12 07:02:07"
+        },
+        {
             "name": "kartik-v/yii2-dialog",
             "version": "v1.0.0",
             "source": {
@@ -938,6 +1097,66 @@
                 "widget"
             ],
             "time": "2015-12-27 16:31:06"
+        },
+        {
+            "name": "kartik-v/yii2-export",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kartik-v/yii2-export.git",
+                "reference": "b12ac2a78b08fc78f11606ec4f53002841143888"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kartik-v/yii2-export/zipball/b12ac2a78b08fc78f11606ec4f53002841143888",
+                "reference": "b12ac2a78b08fc78f11606ec4f53002841143888",
+                "shasum": ""
+            },
+            "require": {
+                "kartik-v/yii2-dialog": "~1.0.0",
+                "kartik-v/yii2-dynagrid": ">=1.4.5",
+                "phpoffice/phpexcel": "~1.8.0"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "kartik\\export\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Kartik Visweswaran",
+                    "email": "kartikv2@gmail.com",
+                    "homepage": "http://www.krajee.com/"
+                }
+            ],
+            "description": "A library to export server/db data in various formats (e.g. excel, html, pdf, csv etc.)",
+            "homepage": "https://github.com/kartik-v/yii2-export",
+            "keywords": [
+                "OpenXML",
+                "csv",
+                "export",
+                "extension",
+                "html",
+                "json",
+                "pdf",
+                "spreadsheet",
+                "text",
+                "widget",
+                "xls",
+                "xlsx",
+                "yii2"
+            ],
+            "time": "2016-10-12 10:44:24"
         },
         {
             "name": "kartik-v/yii2-grid",
@@ -2158,20 +2377,78 @@
             "time": "2014-11-09 19:54:17"
         },
         {
-            "name": "rmrevin/yii2-fontawesome",
-            "version": "2.16.1",
+            "name": "phpoffice/phpexcel",
+            "version": "1.8.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/rmrevin/yii2-fontawesome.git",
-                "reference": "ab08282b8cd05c570634926f41c868cf902981e7"
+                "url": "https://github.com/PHPOffice/PHPExcel.git",
+                "reference": "372c7cbb695a6f6f1e62649381aeaa37e7e70b32"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rmrevin/yii2-fontawesome/zipball/ab08282b8cd05c570634926f41c868cf902981e7",
-                "reference": "ab08282b8cd05c570634926f41c868cf902981e7",
+                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/372c7cbb695a6f6f1e62649381aeaa37e7e70b32",
+                "reference": "372c7cbb695a6f6f1e62649381aeaa37e7e70b32",
                 "shasum": ""
             },
             "require": {
+                "ext-xml": "*",
+                "ext-xmlwriter": "*",
+                "php": ">=5.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PHPExcel": "Classes/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL"
+            ],
+            "authors": [
+                {
+                    "name": "Maarten Balliauw",
+                    "homepage": "http://blog.maartenballiauw.be"
+                },
+                {
+                    "name": "Mark Baker"
+                },
+                {
+                    "name": "Franck Lefevre",
+                    "homepage": "http://blog.rootslabs.net"
+                },
+                {
+                    "name": "Erik Tilt"
+                }
+            ],
+            "description": "PHPExcel - OpenXML - Read, Create and Write Spreadsheet documents in PHP - Spreadsheet engine",
+            "homepage": "http://phpexcel.codeplex.com",
+            "keywords": [
+                "OpenXML",
+                "excel",
+                "php",
+                "spreadsheet",
+                "xls",
+                "xlsx"
+            ],
+            "time": "2015-05-01 07:00:55"
+        },
+        {
+            "name": "rmrevin/yii2-fontawesome",
+            "version": "2.17.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rmrevin/yii2-fontawesome.git",
+                "reference": "65ce306da864f4d558348aeba040ed7876878090"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rmrevin/yii2-fontawesome/zipball/65ce306da864f4d558348aeba040ed7876878090",
+                "reference": "65ce306da864f4d558348aeba040ed7876878090",
+                "shasum": ""
+            },
+            "require": {
+                "fortawesome/font-awesome": "~4.7",
                 "php": ">=5.4.0",
                 "yiisoft/yii2": "2.0.*"
             },
@@ -2206,7 +2483,7 @@
                 "font",
                 "yii"
             ],
-            "time": "2016-08-31 12:41:25"
+            "time": "2017-01-11 14:05:47"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -2548,6 +2825,54 @@
             "time": "2016-08-04 13:29:03"
         },
         {
+            "name": "yiisoft/yii2-imagine",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/yii2-imagine.git",
+                "reference": "59dcd0b43c2b0e5495c7e5c0320e2cbc1cd57411"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/yii2-imagine/zipball/59dcd0b43c2b0e5495c7e5c0320e2cbc1cd57411",
+                "reference": "59dcd0b43c2b0e5495c7e5c0320e2cbc1cd57411",
+                "shasum": ""
+            },
+            "require": {
+                "imagine/imagine": "~0.6.0",
+                "yiisoft/yii2": "~2.0.0"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "yii\\imagine\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Antonio Ramirez",
+                    "email": "amigo.cobos@gmail.com"
+                }
+            ],
+            "description": "The Imagine integration for the Yii framework",
+            "keywords": [
+                "helper",
+                "image",
+                "imagine",
+                "yii2"
+            ],
+            "time": "2016-11-03 19:28:39"
+        },
+        {
             "name": "yiisoft/yii2-swiftmailer",
             "version": "2.0.5",
             "source": {
@@ -2755,6 +3080,7 @@
                 "codeception",
                 "yii2"
             ],
+            "abandoned": "codeception/codeception",
             "time": "2016-03-17 03:41:26"
         },
         {
@@ -2909,7 +3235,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "dektrium/yii2-user": 20,
-        "kartik-v/yii2-dynagrid": 20
+        "kartik-v/yii2-dynagrid": 20,
+        "kartik-v/yii2-export": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

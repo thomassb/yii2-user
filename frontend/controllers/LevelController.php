@@ -20,11 +20,22 @@ class LevelController extends Controller
      */
     public function behaviors()
     {
-        return [
+          return [
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['POST'],
+                    'delete' => ['post'],
+                ],
+            ],
+            'access' => [
+                'class' => \yii\filters\AccessControl::className(),
+                'rules' => [
+                    // allow authenticated users
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                // everything else is denied
                 ],
             ],
         ];
@@ -124,11 +135,13 @@ class LevelController extends Controller
     }
     public function actionAjaxLevelStrand(){
           $out = [];
-        if (isset($_POST['depdrop_parents'])) {
-            $parents = $_POST['depdrop_parents'];
+        if (isset($_POST['depdrop_all_params']['statements-pupilid'])&& isset($_POST['depdrop_all_params']['statements-strandid'])) {
+            $parents = $_POST['depdrop_all_params']['statements-strandid'];
+            $pupilid = $_POST['depdrop_all_params']['statements-pupilid'];
+            $subjectID = $_POST['depdrop_all_params']['subjectid'];
             if ($parents != null) {
                 $cat_id = $parents[0];
-                $r = \frontend\models\Statements::find()->select(['LevelID'])->joinWith('levels')->where(['StrandID' => $cat_id])->distinct()->all();
+                $r = Levels::BaseLineLevels($cat_id, $pupilid,$subjectID);
                 $out = [];
                 foreach ($r as $value) {
                     $out[] = ['id' => $value->level->ID, 'name' => $value->level->LevelText];

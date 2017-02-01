@@ -51,4 +51,8 @@ class Schools extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Users::className(), ['SchoolID' => 'ID']);
     }
+      public static function SchoolList() {
+        //TODO:: Add school variable 
+        return Schools::find()->all();
+    }
 }

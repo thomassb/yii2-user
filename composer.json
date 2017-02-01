@@ -23,7 +23,12 @@
         "dektrium/yii2-user": "0.9.*@dev",
         "kartik-v/yii2-dynagrid": "@dev",
         "kartik-v/yii2-mpdf": "*",
-        "kartik-v/yii2-editable": "*"
+        "kartik-v/yii2-editable": "*",
+        "yiisoft/yii2-imagine": "^2.1",
+        "kartik-v/yii2-date-range": "*",
+        "kartik-v/yii2-export": "@dev",
+        "phpoffice/phpexcel": "^1.8",
+        "rmrevin/yii2-fontawesome": "~2.17"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",

@@ -3,8 +3,35 @@
 namespace frontend\controllers;
 
 use Yii;
+use yii\web\Controller;
+use yii\filters\VerbFilter;
 
-class TrackerController extends \yii\web\Controller {
+class TrackerController extends Controller {
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors() {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['post'],
+                ],
+            ],
+            'access' => [
+                'class' => \yii\filters\AccessControl::className(),
+                'rules' => [
+                    // allow authenticated users
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                // everything else is denied
+                ],
+            ],
+        ];
+    }
 
     // public function init()
 //{
@@ -16,32 +43,33 @@ class TrackerController extends \yii\web\Controller {
 //$p = \frontend\models\Pupils::findOne(['ID'=>1]);
 //print_r($p->statementList);
 //exit;
-        
         // select all statements in the specific strand and level
         //join on pupil satments
-        
-        
+
+
         $searchModel = new \frontend\models\search\Statements();
 //        $searchModel->PupilID = 1;
 //        $queryParams["Statements"]["LevelID"] = 1;
 //        $queryParams["Statements"]["StrandID"] = 1;
-        $queryParams =  Yii::$app->request->getQueryParams();
-        
-        $dataProvider = $searchModel->search($queryParams);
-        $pupil = \frontend\models\Pupils::findOne(['id'=>$searchModel->PupilID]);
-        return $this->render('index', ['searchModel' => $searchModel, 'dataProvider' => $dataProvider,'pupil'=>$pupil]);
+        //$queryParams = Yii::$app->request->getQueryParams();
+
+        //$dataProvider = $searchModel->search($queryParams);
+        $pupil =null;// \frontend\models\Pupils::findOne(['id' => $searchModel->PupilID]);
+        return $this->render('index', ['searchModel' => $searchModel,  'pupil' => $pupil]);
     }
+
     public function actionAjaxPupilPage() {
-        
-        //TODO: Limit to school
+
+
         $searchModel = new \frontend\models\search\Statements();
-        
+
         $queryParams = Yii::$app->request->getQueryParams();
-       
+
         $dataProvider = $searchModel->search($queryParams);
-        $pupil = \frontend\models\Pupils::findOne(['id'=>$searchModel->PupilID]);
-        return $this->renderAjax('pupilpageXeditable', ['searchModel' => $searchModel, 'dataProvider' => $dataProvider,'pupil'=>$pupil]);
+        $pupil = \frontend\models\Pupils::findOne(['id' => $searchModel->PupilID]);
+        return $this->renderAjax('pupilpageXeditable', ['searchModel' => $searchModel, 'dataProvider' => $dataProvider, 'pupil' => $pupil]);
     }
+
     public function actionAjaxPupilPageold() {
         $searchModel = new \frontend\models\search\PupilStatements();
         $searchparams = Yii::$app->request->queryParams;
@@ -64,21 +92,19 @@ class TrackerController extends \yii\web\Controller {
             echo $value->StatementText . ' ' . $value->pupilStatement['PartiallyDate'] . '  <br>';
         }
     }
-public function actionAjaxSave(){
-   
-    $trackersave = new \frontend\models\forms\TrackerSave();
-    $trackersave->load(Yii::$app->request->queryParams,'');
-    $trackersave->load(Yii::$app->request->post(),'');
-   if($trackersave->save())
-   {//return 200
-       echo 'true';
-   }
-   else{//return !200
-        Yii::$app->response->statusCode = 400;
-       Yii::$app->response->content = \yii\bootstrap\Html::errorSummary($trackersave);
-       return Yii::$app->response;
-     
-       }
-   }
-}
 
+    public function actionAjaxSave() {
+
+        $trackersave = new \frontend\models\forms\TrackerSave();
+        $trackersave->load(Yii::$app->request->queryParams, '');
+        $trackersave->load(Yii::$app->request->post(), '');
+        if ($trackersave->save()) {//return 200
+            echo 'true';
+        } else {//return !200
+            Yii::$app->response->statusCode = 400;
+            Yii::$app->response->content = \yii\bootstrap\Html::errorSummary($trackersave);
+            return Yii::$app->response;
+        }
+    }
+
+}

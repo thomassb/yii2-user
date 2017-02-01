@@ -3,18 +3,20 @@ use yii\helpers\Html;
 
 /* @var $this \yii\web\View */
 /* @var $content string */
+$bundle = frontend\themes\sheringham\sheringhamAsset::register($this); 
+$directoryAsset2 = Yii::$app->assetManager->getPublishedUrl('@app/themes/sheringham/images');
 ?>
 
 <header class="main-header">
 
-    <?= Html::a('<span class="logo-mini">' . Yii::$app->name . '</span><span class="logo-lg">' . Yii::$app->name . '</span>', Yii::$app->homeUrl, ['class' => 'logo']) ?>
-
+    <?= Html::a('<span class="logo-mini">' . Yii::$app->name . '</span><span class="logo-lg">' . Yii::$app->name . '<br></span>', Yii::$app->homeUrl, ['class' => 'logo']) ?>
+    
     <nav class="navbar navbar-static-top" role="navigation">
 
         <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
             <span class="sr-only">Toggle navigation</span>
         </a>
-
+        <span class="schoolname"><?=Yii::$app->user->SchoolName ?></span>
         <div class="navbar-custom-menu">
 
             <ul class="nav navbar-nav">
@@ -239,19 +241,22 @@ use yii\helpers\Html;
 
                 <li class="dropdown user user-menu ">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <img src="<?= $directoryAsset ?>/img/avatar.png" class="user-image" alt="User Image"/>
+                        <?= yii\bootstrap\Html::img('@web/uploads/users/' . \Yii::$app->user->identity->profile->myavatar,['class'=>'user-image','alt'=>"User Image"])?>
+                
+                      
                         <span class="hidden-xs"><?=Yii::$app->user->displayName ?></span>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- User image -->
                         <li class="user-header">
-                            <img src="<?= $directoryAsset ?>/img/avatar.png" class="img-circle"
-                                 alt="User Image"/>
+                             <?= yii\bootstrap\Html::img('@web/uploads/users/' . \Yii::$app->user->identity->profile->myavatar,['class'=>'img-circle','alt'=>"User Image"])?>
+                
+                        
 
-                            <p>
+<!--                            <p>
                                
                                 <small>Member since </small>
-                            </p>
+                            </p>-->
                         </li>
                         <!-- Menu Body -->
 <!--                        <li class="user-body">

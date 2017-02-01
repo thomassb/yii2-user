@@ -13,47 +13,62 @@ use yii\base\Model;
  *
  * @property Pupils[] $pupils
  */
-class Classes extends \yii\db\ActiveRecord
-{
+class Classes extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'Classes';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['ClassName'], 'required'],
             [['ClassName'], 'string', 'max' => 250],
+            [['active', 'SchoolID', 'UserID', 'Created'], 'safe'] // not correct
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'ID' => 'ID',
             'ClassName' => 'Class Name',
         ];
     }
+    public static function find()
+{
+    return parent::find()->where(['=', self::tableName().'.SchoolID', \Yii::$app->user->identity->SchoolID]);
+}
+//    public function beforeValidate() {
+//          $this->SchoolID = \Yii::$app->user->identity->SchoolID;
+//        return parent::beforeValidate();
+//    }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getPupils()
-    {
+    public function getPupils() {
         return $this->hasMany(Pupils::className(), ['ClassID' => 'ID']);
     }
-    public static function ClassList(){
+
+    public static function ClassList() {
         //TODO:: Add school variable 
-        return Classes::findAll(['SchoolID'=>2,'active'=>1]);
+        return Classes::findAll(['SchoolID' => \Yii::$app->user->identity->SchoolID, 'active' => 1]);
     }
+
+    public function beforeSave($insert) {
+        if ($insert) {
+            $this->UserID = \Yii::$app->user->identity->id;
+            $this->Created = time();
+        }
+        return parent::beforeSave($insert);
+    }
+
 }

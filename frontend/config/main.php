@@ -4,12 +4,14 @@ $params = array_merge(
         require(__DIR__ . '/../../common/config/params.php'), require(__DIR__ . '/../../common/config/params-local.php'), require(__DIR__ . '/params.php'), require(__DIR__ . '/params-local.php')
 );
 
-$config= [
+$config = [
     'id' => 'app-frontend',
     'name' => 'SPAT',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
+    //'defaultRoute' => 'extendedController',
+
     'components' => [
         'db' => require(__DIR__ . '/../../common/config/db.php'),
         'request' => [
@@ -40,21 +42,27 @@ $config= [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
+        
           'urlManager' => [
           'enablePrettyUrl' => true,
           'showScriptName' => false,
           'rules' => [
           ],
           ],
-         */
+         
+        'controller' => [
+            'class' => 'common\controllers\extendedController',
+        ],
+        
         'view' => [
+            'class' => 'common\classes\extendedView',
             'theme' => [
                 'pathMap' => [
                     '@app/views' => '@app/themes/main/',
                     '@common/user/views' => '@app/themes/main/user/', // example: @app/views/user/default/login.php
                 ],
                 'baseUrl' => "/themes/main",
+                'basePath' => '@app/themes/main',
             ],
         ],
     ],

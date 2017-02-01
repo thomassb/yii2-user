@@ -4,7 +4,7 @@ namespace frontend\controllers;
 
 use Yii;
 use frontend\models\Strands;
-use frontend\models\Search\Strands as StrandsSearch;
+use frontend\models\search\Strands as StrandsSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,11 +20,22 @@ class StrandController extends Controller
      */
     public function behaviors()
     {
-        return [
+          return [
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['POST'],
+                    'delete' => ['post'],
+                ],
+            ],
+            'access' => [
+                'class' => \yii\filters\AccessControl::className(),
+                'rules' => [
+                    // allow authenticated users
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                // everything else is denied
                 ],
             ],
         ];

@@ -65,6 +65,10 @@ class Pupils extends \yii\db\ActiveRecord {
         ];
     }
 
+//   public static function find()
+//{
+//    return parent::find()->where(['=', self::tableName().'.SchoolID', \Yii::$app->user->identity->SchoolID]);
+//}
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -78,11 +82,11 @@ class Pupils extends \yii\db\ActiveRecord {
     public function getPupilStatements() {
         return $this->hasMany(PupilStatements::className(), ['PupilID' => 'ID']);
     }
-     public function getStatementList()
-    {
+
+    public function getStatementList() {
         return $this->hasMany(PupilStatements::className(), ['PupilID' => 'ID'])
-                ->joinWith(['statement'], true, 'INNER JOIN')
-                ->andOnCondition('PupilID = '. $this->ID);
+                        ->joinWith(['statement'], true, 'INNER JOIN')
+                        ->andOnCondition('PupilID = ' . $this->ID);
     }
 
     /**
@@ -107,12 +111,19 @@ class Pupils extends \yii\db\ActiveRecord {
     }
 
     public function getFullName() {
-        return $this->FirstName . ' ' . $this->LastName;
+        return $this->FirstName . ' ' . $this->LastName .' ('. $this->class->ClassName.')';
     }
 
-     public static function PupilList(){
+    public static function PupilList() {
         //TODO:: Add school variable 
-        return Pupils::findAll(['SchoolID'=>2]);
+        return Pupils::find()->all();
+    }
+
+    public function beforeSave($insert) {
+
+        $this->DoB = \Yii::$app->formatter->asDatetime($this->DoB, "php:Y-m-d");
+//          $this->created_at = \Yii::$app->formatter->asDatetime($this->created_at, "php:d-m-Y H:i:s");
+        return parent::beforeSave($insert);
     }
 
 }
