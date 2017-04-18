@@ -55,7 +55,7 @@ class TargetsController extends Controller {
                 if ($key == 'id') {
                     foreach ($value as $nonSavedTargetkey => $nonSavedTarget) {
                         $_t = new Targets();
-                        $_t->PupilID = $reportForm->pupilID;
+                        $_t->PupilID = $reportForm->PupilID;
                         $_t->StrandID = preg_replace('/\D/', '', $nonSavedTargetkey);
                         $_t->load($nonSavedTarget, '');
                         $_t->save();
@@ -67,7 +67,7 @@ class TargetsController extends Controller {
                         $_t = Targets::findOne($id);
                         if (!$_t) {
                             $_t = new Targets();
-                            $_t->PupilID = $reportForm->pupilID;
+                            $_t->PupilID = $reportForm->PupilID;
                             $_t->StrandID = preg_replace('/\D/', '', $SavedTargetkey);
                         }
 
@@ -96,20 +96,33 @@ class TargetsController extends Controller {
             if ($reportForm->classID) {
                 
             }
-            if ($reportForm->pupilID > 0) {
+            if ($reportForm->PupilID > 0) {
 
-                $pupil = \frontend\models\Pupils::findOne($reportForm->pupilID);
+                $pupil = \frontend\models\Pupils::findOne($reportForm->PupilID);
                 if ($pupil) {
                     $yeargroup = \frontend\models\YearGroups::getYearGroup($pupil->DoB);
-                    // print_r($yeargroup);
+
+                    if ($yeargroup->YearGroup == 'N1' || $yeargroup->YearGroup == 'N2' || $yeargroup->YearGroup == 'Reception') {
+                        //no targets needed
+                        \Yii::$app->getSession()->setFlash('warning', 'Pupil is in early years');
+                        return $this->render('index', [
+                                    'searchModel' => $searchModel,
+                                    'dataProvider' => $dataProvider,
+                                    'reportForm' => $reportForm,
+                                    'pupilData' => $pupilData,
+                                    'pupil' => $pupil,
+                                    'listOfStrands' => $listOfStrands,
+                                    'yeargroup' => $yeargroup
+                        ]);
+                    }
                 }
-                $pupilData = Targets::find()->where(['pupilID' => $reportForm->pupilID])->all();
+                $pupilData = Targets::find()->where(['pupilID' => $reportForm->PupilID])->all();
 
                 if (!$pupilData) {
                     foreach ($listOfStrands as $key => $strand) {
 
                         $target = new Targets();
-                        $target->PupilID = $reportForm->pupilID;
+                        $target->PupilID = $reportForm->PupilID;
                         $target->StrandID = $key;
                         $pupilData[] = $target;
                     }

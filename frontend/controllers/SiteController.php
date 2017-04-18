@@ -14,6 +14,9 @@ use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
 
+use frontend\models\Bulletins;
+use frontend\models\search\Bulletins as BulletinsSearch;
+
 /**
  * Site controller
  */
@@ -81,9 +84,10 @@ class SiteController extends Controller {
      * @return mixed
      */
     public function actionIndex() {
+ $BulletinssearchModel = new BulletinsSearch();
+        $BulletinsdataProvider = $BulletinssearchModel->search(Yii::$app->request->queryParams);
 
-
-        return $this->render('index');
+        return $this->render('index',['BulletinsdataProvider'=>$BulletinsdataProvider]);
     }
 
     /**

@@ -135,10 +135,10 @@ class LevelController extends Controller
     }
     public function actionAjaxLevelStrand(){
           $out = [];
-        if (isset($_POST['depdrop_all_params']['statements-pupilid'])&& isset($_POST['depdrop_all_params']['statements-strandid'])) {
-            $parents = $_POST['depdrop_all_params']['statements-strandid'];
-            $pupilid = $_POST['depdrop_all_params']['statements-pupilid'];
-            $subjectID = $_POST['depdrop_all_params']['subjectid'];
+        if (isset($_POST['depdrop_all_params']['formreport-pupilid'])&& isset($_POST['depdrop_all_params']['formreport-strandid'])) {
+            $parents = $_POST['depdrop_all_params']['formreport-strandid'];
+            $pupilid = $_POST['depdrop_all_params']['formreport-pupilid'];
+            $subjectID = $_POST['depdrop_all_params']['formreport-subjectid'];
             if ($parents != null) {
                 $cat_id = $parents[0];
                 $r = Levels::BaseLineLevels($cat_id, $pupilid,$subjectID);

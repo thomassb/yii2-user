@@ -9,19 +9,18 @@ use yii\helpers\ArrayHelper;
 use frontend\models\Classes;
 use frontend\models\Pupils;
 
+
 use yii\bootstrap\Html;
 use kartik\daterange\DateRangePicker;
 use yii\web\JsExpression;
 
-use common\widgets\ReportListView;
-
-$this->title = Yii::t('app', 'Detailed Reports');
+$this->title = Yii::t('app', 'Starting Level Report');
 $this->params['breadcrumbs'][] = Yii::t('app', 'Reports');;
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="box box-default">
     <div class="box-header with-border">
-        <h3 class="box-title">Pupil and Level Selection</h3>
+        <h3 class="box-title">Pupil and Subject Selection</h3>
         <div class="box-tools pull-right">
             <button class="btn btn-box-tool" data-widget="collapse">
                 <i class="fa fa-minus"></i>
@@ -34,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="box-body">
         <div class="col-sm-12">
             <?php
-            yii\bootstrap\ActiveForm::begin([ 'method' => 'get', 'action' => ['report/detailed']]);
+            yii\bootstrap\ActiveForm::begin([ 'method' => 'get']);
             ?>
             <div class="row">
                 <div class="col-md-6">
@@ -59,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <?php
                         $url = \yii\helpers\Url::to(['/pupils/ajax-pupil-search']);
-                        $pupilInital= empty($reportForm->pupilID) ? '' : Pupils::findOne($reportForm->pupilID)->FullName;
+                        $pupilInital= empty($reportForm->PupilID) ? '' : Pupils::findOne($reportForm->PupilID)->FullName;
                         echo Select2::widget([
                             'attribute' => 'pupilID',
                             'model' => $reportForm,
@@ -138,35 +137,35 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
                 </div>
             </div>
-            <div class="row">
+<!--            <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
                         <?php
-                        $addon = <<< HTML
-<span class="input-group-addon"  title="Open Calendar">
-    <i class="glyphicon glyphicon-calendar"></i>
-                                
-</span>
-
-HTML;
-                        echo '<div class="input-group drp-container">';
-                        echo DateRangePicker::widget([
-                            'model' => $reportForm,
-                            'attribute' => '_daterange',
-                            'useWithAddon' => true,
-                            'convertFormat' => true,
-                            'presetDropdown' => true,
-                            //  'options' => ['placeholder' => 'Date range ...'],
-                            //  'startAttribute' => 'dateFrom',
-                            //  'endAttribute' => 'dateTo',
-                            'options' => ['class' => 'clearable-date form-control','placeholder' => 'Date range ...'],
-                            'pluginOptions' => [
-                                'locale' => ['format' => 'Y-m-d'],
-//                                'removeButton' => true,
-//                                'type' => kartik\widgets\DatePicker::TYPE_COMPONENT_PREPEND,
-//                                'allowClear' => true,
-                            ]
-                        ]) . $addon;
+//                        $addon = <<< HTML
+//<span class="input-group-addon"  title="Open Calendar">
+//    <i class="glyphicon glyphicon-calendar"></i>
+//                                
+//</span>
+//
+//HTML;
+//                        echo '<div class="input-group drp-container">';
+//                        echo DateRangePicker::widget([
+//                            'model' => $reportForm,
+//                            'attribute' => '_daterange',
+//                            'useWithAddon' => true,
+//                            'convertFormat' => true,
+//                            'presetDropdown' => true,
+//                            //  'options' => ['placeholder' => 'Date range ...'],
+//                            //  'startAttribute' => 'dateFrom',
+//                            //  'endAttribute' => 'dateTo',
+//                            'options' => ['class' => 'clearable-date form-control','placeholder' => 'Date range ...'],
+//                            'pluginOptions' => [
+//                                'locale' => ['format' => 'Y-m-d'],
+////                                'removeButton' => true,
+////                                'type' => kartik\widgets\DatePicker::TYPE_COMPONENT_PREPEND,
+////                                'allowClear' => true,
+//                            ]
+//                        ]) . $addon;
                         ?>
                         <span class="input-group-addon date-remove" title="Clear field">
                             <i class="glyphicon glyphicon-remove"></i>
@@ -177,7 +176,7 @@ HTML;
 
                 </div>
             </div>
-        </div>  
+        </div>  -->
         <div class="row"><div class="col-md-6">
                 <div class="form-group">
                     <?= Html::submitButton('Run Report', ['class' => 'btn btn-primary', 'id' => 'statment-search']) ?>
@@ -194,7 +193,8 @@ HTML;
 
 
 </div>
-<?php if ($pupilData): ?>
+<?php
+if($pupilData!=null):?>
 <div class="box box-default">
     <div class="box-header with-border">
         <h3 class="box-title">Report</h3>
@@ -206,11 +206,11 @@ HTML;
                 </button>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="<?= Yii::$app->request->url ?>&pdf=1"><i class="fa  fa-file-pdf-o"></i>PDF</a>
-                    </li>
-                    <li>
-                        <a href="<?= Yii::$app->request->url ?>&csv=1"><i class="fa  fa-file-pdf-o"></i>CSV</a>
-                    </li>
+                            <a href="<?= Yii::$app->request->url ?>&pdf=1"><i class="fa  fa-file-pdf-o"></i>PDF</a>
+                        </li>
+                        <li>
+                            <a href="<?= Yii::$app->request->url ?>&csv=1"><i class="fa  fa-file-pdf-o"></i>CSV</a>
+                        </li>
                 </ul>
             </div>
 
@@ -222,26 +222,23 @@ HTML;
     <div class="box-body">
 
 
-   <!--     <table class="kv-grid-table table table-bordered table-striped table-condensed kv-table-wrap">
-            <thead>
+        <table class="kv-grid-table table table-bordered table-striped table-condensed kv-table-wrap">
+<!--            <thead>
             <th>Subject</th>
             <th>Level</th>
-            </thead>
-            <tbody>-->
+            </thead>-->
+            <tbody>
                 <?php
-                echo ReportListView::widget([
+                echo ListView::widget([
                     'dataProvider' => $pupilData,
-                //    'itemOptions' => [
-                //'tag' => 'tr',],
-                    'itemView' => '_pupilDetailedItem',
+                    'itemOptions' => [],
+                    'itemView' => '_startingLevelItem',
                     'summary' => "Showing <b>{begin} - {end}</b> of <b>{totalCount}</b> pupils",
-                    //    'summary' => '',
-                    'layout'=>"{summary}\n<table class=\"kv-grid-table table table-bordered table-striped table-condensed kv-table-wrap\"> <tbody>\n{items} </tbody>
-        </table>\n{pager}",
+                        //'summary' => '',
                 ]);
                 ?> 
-<!--            </tbody>
-        </table>-->
+            </tbody>
+        </table>
         <div id="custom-pagination">
             <?php
 //            echo \yii\widgets\LinkPager::widget([
@@ -258,8 +255,6 @@ HTML;
 
 </div>
 <?php endif;?>
-
-
 
 
 

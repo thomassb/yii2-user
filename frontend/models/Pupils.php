@@ -18,12 +18,15 @@ use common\models\Users;
  * @property integer $UserID
  * @property integer $SchoolID
  * @property string $Created
+ * @property integer $PupilPremium
  *
  * @property PupilStartingLevel[] $pupilStartingLevels
  * @property PupilStatements[] $pupilStatements
  * @property Schools $school
  * @property Classes $class
  * @property Users $user
+ *  $this->SchoolID =  \Yii::$app->user->identity->SchoolID;
+  $this->UserID =  \Yii::$app->user->identity->SchoolID;
  */
 class Pupils extends \yii\db\ActiveRecord {
 
@@ -40,13 +43,18 @@ class Pupils extends \yii\db\ActiveRecord {
     public function rules() {
         return [
             [['FirstName', 'LastName', 'ClassID', 'DoB', 'UserID', 'SchoolID'], 'required'],
-            [['ClassID', 'UserID', 'SchoolID'], 'integer'],
+            [['ClassID', 'UserID', 'SchoolID','PupilPremium'], 'integer'],
             [['DoB', 'Created'], 'safe'],
             [['FirstName', 'LastName'], 'string', 'max' => 250],
             [['SchoolID'], 'exist', 'skipOnError' => true, 'targetClass' => Schools::className(), 'targetAttribute' => ['SchoolID' => 'ID']],
             [['ClassID'], 'exist', 'skipOnError' => true, 'targetClass' => Classes::className(), 'targetAttribute' => ['ClassID' => 'ID']],
             [['UserID'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['UserID' => 'id']],
         ];
+    }
+
+    public function init() {
+
+        return parent::init();
     }
 
     /**
@@ -111,17 +119,23 @@ class Pupils extends \yii\db\ActiveRecord {
     }
 
     public function getFullName() {
-        return $this->FirstName . ' ' . $this->LastName .' ('. $this->class->ClassName.')';
+        return $this->FirstName . ' ' . $this->LastName . ' (' . $this->class->ClassName . ')';
     }
 
-    public static function PupilList() {
+    public static function PupilList($classID = null) {
         //TODO:: Add school variable 
+        if ($classID != null) {
+            return Pupils::find()->where(['ClassID' => $classID])->all();
+        }
         return Pupils::find()->all();
     }
+
+
 
     public function beforeSave($insert) {
 
         $this->DoB = \Yii::$app->formatter->asDatetime($this->DoB, "php:Y-m-d");
+
 //          $this->created_at = \Yii::$app->formatter->asDatetime($this->created_at, "php:d-m-Y H:i:s");
         return parent::beforeSave($insert);
     }

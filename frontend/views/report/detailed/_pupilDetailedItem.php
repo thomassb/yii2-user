@@ -24,14 +24,17 @@ foreach ($model as $key =>  $value) {
         
             <?php
                 if (is_array($level)) {
-                    foreach ($level as $Statments) {
+                    foreach ($level as $level=> $Statments) {
                         //    echo print_r($Statment);
                         if (is_array($Statments)) {
-
-                            echo '<tr><td>'.$Statments['StatementText'].'</td> '
-                                    . '<td>'.$Statments['ConsolidatedDate'].'</td> '
-                                    . '<td>'.$Statments['AchievedDate'].'</td> '
-                                    . '<td>'.$Statments['PartiallyDate'].'</td> </tr>';
+                              echo '<tr ><td  colspan="4"><b>'.$level.'</b></td></tr>';
+                            foreach ($Statments as $statment){
+                                 
+                            echo '<tr><td>'.$statment['StatementText'].'</td> '
+                                    . '<td>'.$statment['ConsolidatedDate'].'</td> '
+                                    . '<td>'.$statment['AchievedDate'].'</td> '
+                                    . '<td>'.$statment['PartiallyDate'].'</td> </tr>';
+                            }
                         } else {
                             //Strand name
                               echo '<tr class="warning"><td>'.$Statments.'</td>'

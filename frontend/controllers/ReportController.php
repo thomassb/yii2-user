@@ -58,10 +58,10 @@ class ReportController extends Controller {
         ]);
     }
 
-    public static function PupilMaxLevel($puplID, $subjectID, $strandID) {
+    public static function PupilMaxLevel($puplID, $subjectID = null, $strandID = null) {
         $form = new formReport();
-        $form->pupilID = $puplID;
-        // $form->subjectID = $subjectID;
+        $form->PupilID = $puplID;
+        $form->subjectID = $subjectID;
         $form->strandID = $strandID;
         $me = new self([], []);
         $levels = $me->_MaxLevels($form, $puplID);
@@ -69,24 +69,26 @@ class ReportController extends Controller {
 //        exit;
         if ($levels && isset($levels[0]['lid'])) {
             return $levels[0]['lid'];
-            $connection = Yii::$app->db;
-            $command = $connection->createCommand('CALL GetPupilCurrentLevel(:pupilID,:strandid,:levelid)');
-            $command->bindValue(':pupilID', $puplID);
-            $command->bindValue(':strandid', $levels[0]['id']);
-            $command->bindValue(':levelid', $levels[0]['lid']);
-            $levels = $command->queryAll();
-            return $levels;
+//            $connection = Yii::$app->db;
+//            $command = $connection->createCommand('CALL GetPupilCurrentLevel(:pupilID,:strandid,:levelid)');
+//            $command->bindValue(':pupilID', $puplID);
+//            $command->bindValue(':strandid', $levels[0]['id']);
+//            $command->bindValue(':levelid', $levels[0]['lid']);
+//            $levels = $command->queryAll();
+//            return $levels;
         }
         return 0;
     }
 
     public static function _MaxLevels($reportForm, $pupilid) {
-        /* /*SELECT  Strands.id ,max(levelid) as lid, SubjectAreas.SubjectID  FROM `PupilStatements` 
+        /* SELECT  Strands.id ,max(levelid) as lid, SubjectAreas.SubjectID  FROM `PupilStatements` 
           join Statements on Statements.id = PupilStatements.StatementID
           join Strands on Strands.id = Statements.strandid
           JOIN SubjectAreas ON SubjectAreas.areaid = Strands.ID
           where pupilid = '1' and consolidateddate is not null and consolidateddate >0 group by SubjectAreas.SubjectID, strandid
          * 
+         * 
+         * This should fall back onto start levels if no max is found.
          */
         $connection = Yii::$app->db;
         $sqlbase = "SELECT Strands.id ,max(levelid) as lid, SubjectAreas.SubjectID FROM `PupilStatements`
@@ -245,7 +247,7 @@ class ReportController extends Controller {
 //                        $command->bindValue(':strandid', $level['id']);
 //                        $command->bindValue(':levelid', $level['lid']);
 //                        $levels = $command->queryAll();
-                        $levels = $this->_GetPupilCurrentLevel($pupilid, $level['id'], $level['lid'], $level['SubjectID']);
+                        $levels = $this->GetPupilCurrentLevel($pupilid, $level['id'], $level['lid'], $level['SubjectID']);
                         $levels[0]['name'] = $pupil->FullName;
                         $pupilData [$pupilid][$levels[0]['Subject']][] = $levels[0];
                     }
@@ -265,12 +267,20 @@ class ReportController extends Controller {
 
 //exit;
             $pupilids = [];
-            if ($reportForm->pupilID) {
-                $pupilids = [$reportForm->pupilID];
+            if ($reportForm->PupilID) {
+                $pupilids = [$reportForm->PupilID];
             } elseif ($reportForm->classID) {
-                $pupilids = ArrayHelper::map(\frontend\models\Pupils::find()->where(['ClassID' => $reportForm->classID])->all(), 'ID', 'ID');
+                if ($reportForm->PupilPremium == 1) {
+                    $pupilids = ArrayHelper::map(\frontend\models\Pupils::find()->where(['ClassID' => $reportForm->classID, 'PupilPremium' => 1])->all(), 'ID', 'ID');
+                } else {
+                    $pupilids = ArrayHelper::map(\frontend\models\Pupils::find()->where(['ClassID' => $reportForm->classID])->all(), 'ID', 'ID');
+                }
             } else {
-                $pupilids = ArrayHelper::map(\frontend\models\Pupils::find()->all(), 'ID', 'ID');
+                if ($reportForm->PupilPremium == 1) {
+                    $pupilids = ArrayHelper::map(\frontend\models\Pupils::find()->where(['PupilPremium' => 1])->all(), 'ID', 'ID');
+                } else {
+                    $pupilids = ArrayHelper::map(\frontend\models\Pupils::find()->all(), 'ID', 'ID');
+                }
             }
             if (isset($queryParams['pdf'])) {
 
@@ -346,15 +356,45 @@ class ReportController extends Controller {
         ]);
     }
 
-    private function _detailedReportData($classID, $subjectID, $pupilid, $pupilsNoPerPage, $pupilidsStart) {
+    private function _detailedReportData($reportForm, $pupilsNoPerPage, $pupilidsStart) {
         $connection = Yii::$app->db;
-        $command = $connection->createCommand('CALL DetailedReport(:pupilID,:classID,:subjectID,:schoolID,:offset,:limit)');
+
+        $classID = $reportForm->classID;
+        $subjectID = $reportForm->subjectID;
+        $pupilid = $reportForm->PupilID;
+        // $command = $connection->createCommand('CALL DetailedReport(:pupilID,:classID,:subjectID,:schoolID,:offset,:limit)');
+        $sql = 'SELECT * FROM `PupilStatements` 
+                join Statements on Statements.id = PupilStatements.StatementID
+                join Strands on Strands.id = Statements.strandid 
+                join SubjectAreas on SubjectAreas.AreaID = Statements.strandid
+                join Subjects on Subjects.ID = SubjectAreas.SubjectID  
+                join Pupils on Pupils.id = PupilStatements.pupilid
+                where ';
+        if ($reportForm->PupilPremium == 1) {
+            $sql .=' Pupils.PupilPremium=1 and ';
+        }
+        $sql .='  (:pupilID is null or Pupils.id =:pupilID) 
+                and (:classID is null or Pupils.classid=:classID) 
+                and (:schoolID is null or Pupils.schoolid=:schoolID)
+                and (:subjectID is null or Subjects.ID=:subjectID )
+                order by pupilID, strandID';
+
+
+// if ($pupilsNoPerPage) {
+//            $sql .=  ' limit :offset, :limit';   
+//        }
+        $command = $connection->createCommand($sql);
+//        if ($pupilsNoPerPage) {
+//         
+//            $command->bindValue(':limit', $pupilsNoPerPage);
+//            $command->bindValue(':offset', $pupilidsStart);
+//        }
+
         $command->bindValue(':classID', $classID);
         $command->bindValue(':schoolID', \Yii::$app->user->identity->SchoolID);
         $command->bindValue(':subjectID', $subjectID);
         $command->bindValue(':pupilID', $pupilid);
-        $command->bindValue(':limit', $pupilsNoPerPage);
-        $command->bindValue(':offset', $pupilidsStart);
+
 
         $detailedReport = $command->queryAll();
 
@@ -362,14 +402,16 @@ class ReportController extends Controller {
         $pupildata = [];
 //         print_r(array_slice($detailedReport,0,10));
 //        exit;
+        $levelsArray = ArrayHelper::map(\frontend\models\Levels::find()->all(), 'ID', 'LevelText');
         foreach ($detailedReport as $statment) {
+
             $pupildata[$statment['PupilID']][$statment['Subject']]['PupilName'] = $statment['FirstName'] . ' ' . $statment['LastName'];
 
             $pupildata[$statment['PupilID']][$statment['Subject']][$statment['StrandID']]['Strand'] = $statment['StrandText'];
 
             $pupildata[$statment['PupilID']]
                     [$statment['Subject']]
-                    [$statment['StrandID']]
+                    [$statment['StrandID']][$levelsArray[$statment['LevelID']]]
                     [$statment['StatementID']] = ['StatementText' => $statment['StatementText'],
                 'ConsolidatedDate' => $statment['ConsolidatedDate'],
                 'AchievedDate' => $statment['AchievedDate'],
@@ -394,7 +436,7 @@ class ReportController extends Controller {
             if (isset($queryParams['csv'])) {
                 //all pupils
                 $this->layout = false;
-                $pupildata = $this->_detailedReportData($reportForm->classID, $reportForm->subjectID, $reportForm->pupilID, 100000, 0);
+                $pupildata = $this->_detailedReportData($reportForm, 100000, 0);
                 $providerCSV = new ArrayDataProvider([
                     'allModels' => $pupildata,
                     'pagination' => [
@@ -413,7 +455,7 @@ class ReportController extends Controller {
 
             $pupilidsStart = (isset($queryParams['page']) ? (intval($queryParams['page'])) * $pupilsNoPerPage - $pupilsNoPerPage : 0);
 
-            $pupildata = $this->_detailedReportData($reportForm->classID, $reportForm->subjectID, $reportForm->pupilID, $pupilsNoPerPage, $pupilidsStart);
+            $pupildata = $this->_detailedReportData($reportForm, $pupilsNoPerPage, $pupilidsStart);
 
 
             $provider = new ArrayDataProvider([
@@ -424,7 +466,7 @@ class ReportController extends Controller {
             ]);
         }
 
-        return $this->render('pupildetailed', [
+        return $this->render('detailed/pupildetailed', [
                     'pupilData' => $provider,
 //                    'pages' => $pages,
                     'reportForm' => $reportForm
@@ -440,7 +482,7 @@ class ReportController extends Controller {
 
     public function DetailedReportPDF($reportForm) {
         // get your HTML raw content without any layouts or scripts
-        $pupildata = $this->_detailedReportData($reportForm->classID, $reportForm->subjectID, $reportForm->pupilID, 100000, 0);
+        $pupildata = $this->_detailedReportData($reportForm, 100000, 0);
         $providerPDF = new ArrayDataProvider([
             'allModels' => $pupildata,
             'pagination' => [
@@ -451,7 +493,7 @@ class ReportController extends Controller {
         $filename = "DetailedReport-{$date}.pdf";
         $filter = $reportForm->NiceFilterName();
         $title = 'Summary Report';
-        $content = $this->renderPartial('pdf/_detailedPDF', ['pupilData' => $providerPDF]);
+        $content = $this->renderPartial('pdf/_DetailedPDF', ['pupilData' => $providerPDF]);
 //echo $content;
 //exit;
         return $this->_CreatePDF($filename, $title, $filter, $content);
@@ -523,21 +565,27 @@ class ReportController extends Controller {
 
         $output = "$title\n";
         $output.= "$filter\n";
-        $output.= "\"Pupil\",\"Subject\",\"Stand\",\"Statment\",\"Consolidated\",\"Achieved\",\"Partially\"\n";
+        $output.= "\"Pupil\",\"Subject\",\"Stand\",\"Level\",\"Statment\",\"Consolidated\",\"Achieved\",\"Partially\"\n";
         foreach ($provider->getModels() as $subject) {
             foreach ($subject as $subkeyname => $pupil) {
                 $name = (isset($pupil['PupilName']) ? $pupil['PupilName'] : '');
                 $subjectName = $subkeyname;
-                foreach ($pupil as $p) {
+                foreach ($pupil as $leveltext => $p) {
                     if (is_array($p)) {
-                        $StrandText = (isset($p['Strand']) ? $p['Strand'] : '');
-                        foreach ($p as $strand) {
-                            $StamentText = (isset($strand['StrandText']) ? $strand['StrandText'] : '');
-                            $Consolidated = (isset($strand['ConsolidatedDate']) ? $strand['ConsolidatedDate'] : '');
-                            $Achieved = (isset($strand['AchievedDate']) ? $strand['AchievedDate'] : '');
-                            $Partially = (isset($strand['PartiallyDate']) ? $strand['PartiallyDate'] : '');
 
-                            $output.= "\"{$name}\",\"{$subjectName}\",\"{$StrandText}\",\"{$StamentText}\",\"{$Consolidated}\",\"{$Achieved}\",\"{$Partially}\"\n";
+                        $StrandText = (isset($p['Strand']) ? $p['Strand'] : '');
+                        foreach ($p as $leveltext => $strand) {
+                            if (is_array($strand)) {
+
+                                foreach ($strand as $statment) {
+                                    $StamentText = (isset($statment['StatementText']) ? $statment['StatementText'] : '');
+                                    $Consolidated = (isset($statment['ConsolidatedDate']) ? $statment['ConsolidatedDate'] : '');
+                                    $Achieved = (isset($statment['AchievedDate']) ? $statment['AchievedDate'] : '');
+                                    $Partially = (isset($statment['PartiallyDate']) ? $statment['PartiallyDate'] : '');
+                                    $level = (isset($leveltext) ? $leveltext : '');
+                                    $output.= "\"{$name}\",\"{$subjectName}\",\"{$StrandText}\",\"{$level}\",\"{$StamentText}\",\"{$Consolidated}\",\"{$Achieved}\",\"{$Partially}\"\n";
+                                }
+                            }
                         }
                     }
                 }
@@ -550,7 +598,7 @@ class ReportController extends Controller {
 
         $output = "$title\n";
         $output.= "$filter\n";
-        $output.= "\"Pupil\",\"Subject\",\"Stand\",\"Starting Level\"\n";
+        $output.= "\"Pupil\",\"Subject\",\"Stand\",\"Starting Level\",\"Date\"\n";
         foreach ($provider->getModels() as $pupil) {
             $name = (isset($pupil['name']) ? $pupil['name'] : '');
             foreach ($pupil as $key => $subjects) {
@@ -561,7 +609,8 @@ class ReportController extends Controller {
                         foreach ($p as $level) {
                             $StrandText = (isset($level['strand']) ? $level['strand'] : '');
                             $thelevel = (isset($level['Level']) ? $level['Level'] : '');
-                            $output.= "\"{$name}\",\"{$subject}\",\"{$StrandText}\",\"{$thelevel}\"" . "\n";
+                            $date = ($level['Date'] == '0000-00-00 00:00:00' ? '' : \Yii::$app->formatter->asDate($level['Date'], 'php:Y-m-d'));
+                            $output.= "\"{$name}\",\"{$subject}\",\"{$StrandText}\",\"{$thelevel}\",\"{$date}\"" . "\n";
                         }
                     }
                 }
@@ -585,9 +634,9 @@ class ReportController extends Controller {
         if (isset(Yii::$app->request->getQueryParams()['formReport']['classID'])) {
 
 
-            if ($reportForm->pupilID) {
+            if ($reportForm->PupilID) {
 
-                $pupilid = $reportForm->pupilID;
+                $pupilid = $reportForm->PupilID;
                 $startlingLevels->andWhere(['PupilID' => $pupilid]);
             }
             if ($reportForm->classID) {
@@ -617,7 +666,7 @@ class ReportController extends Controller {
                     $pupildata[$level['PupilID']]['name'] = $level->pupil->FullName;
                 }
 
-                $pupildata[$level['PupilID']]['levels'][$level->strand->subjectAreas[0]->subject->Subject][] = ['strand' => $level->strand->StrandText, 'Level' => $level->level->LevelText];
+                $pupildata[$level['PupilID']]['levels'][$level->strand->subjectAreas[0]->subject->Subject][] = ['strand' => $level->strand->StrandText, 'Level' => $level->level->LevelText, 'Date' => $level->LevelDate];
             }
 
             if (isset($queryParams['pdf'])) {
@@ -665,16 +714,243 @@ class ReportController extends Controller {
                 ],
             ]);
         }
-        return $this->render('startinglevel', [
+        return $this->render('startinglevels/startinglevel', [
                     'pupilData' => $provider,
 //                    'pages' => $pages,
                     'reportForm' => $reportForm
         ]);
     }
 
+    public function actionCurrentLevelStatments() {
+        $queryParams = Yii::$app->request->getQueryParams();
+        $reportForm = new formReport();
+        $reportForm->load(Yii::$app->request->getQueryParams());
+        $provider = null;
+        if (isset(Yii::$app->request->getQueryParams()['formReport']['classID'])) {
+            if ($reportForm->PupilID == '' && $reportForm->classID == '') {
+                \Yii::$app->getSession()->setFlash('error', 'Please enter a class or pupil');
+                return $this->render('currentLevelStaments/currentLevelStatments', [
+                            'pupilData' => $provider,
+//                    'pages' => $pages,
+                            'reportForm' => $reportForm
+                ]);
+            }
+
+            if ($reportForm->PupilID != '') {
+                $searchedPupils = [$reportForm->PupilID];
+            } else {
+                $searchedPupils = ArrayHelper::map(\frontend\models\Pupils::find()->asArray()->where(['classid' => $reportForm->classID])->select('ID')->all(), 'ID', 'ID');
+            }
+
+
+            if (isset($queryParams['pdf'])) {
+                return $this->CurrentLevelStatmentsPDF($reportForm, $searchedPupils);
+
+                exit;
+            }
+            if (isset($queryParams['csv'])) {
+                //all pupils
+                $this->layout = false;
+                $pupildata = $this->_CurrentLevelStatments($searchedPupils);
+                $providerCSV = new ArrayDataProvider([
+                    'allModels' => $pupildata,
+                    'pagination' => [
+                        'pageSize' => -1,
+                    ],
+                ]);
+                $date = date('jFY');
+                $filename = "CurrentLevelStatments-{$date}.csv";
+                $filter = $reportForm->NiceFilterName();
+                $title = 'Current Level Statments Report';
+                return $this->CurrentLevelStatmentsCSV($providerCSV, $filename, $title, $filter);
+                exit;
+                // \Yii::$app->response->sendContentAsFile($pdf, 'ClassReport.pdf');
+            }
+            $pupilsNoPerPage = 1;
+
+            $pupilidsStart = (isset($queryParams['page']) ? (intval($queryParams['page'])) * $pupilsNoPerPage - $pupilsNoPerPage : 0);
+
+            $pupildata = $this->_CurrentLevelStatments($searchedPupils);
+
+
+            $provider = new ArrayDataProvider([
+                'allModels' => $pupildata,
+                'pagination' => [
+                    'pageSize' => 1,
+                ],
+            ]);
+        }
+
+        return $this->render('currentLevelStaments/currentLevelStatments', [
+                    'pupilData' => $provider,
+//                    'pages' => $pages,
+                    'reportForm' => $reportForm
+        ]);
+    }
+
+    private function _CurrentLevelStatments($pupilIDs) {
+        /*
+         * For each of the subject strands find the pupils current level, if no level set do lowest level.
+         * Find all statments in the current level populated with any data already added.
+         */
+        $subjectStands = \frontend\models\SubjectAreas::find()->all();
+        $data = [];
+
+        $pupildata = [];
+        $strandArray = ArrayHelper::map(\frontend\models\Strands::find()->all(), 'ID', 'StrandText');
+        $levelsArray = ArrayHelper::map(\frontend\models\Levels::find()->all(), 'ID', 'LevelText');
+        $subjectArray = ArrayHelper::map(\frontend\models\Subjects::find()->all(), 'ID', 'Subject');
+        foreach ($pupilIDs as $pupilID) {
+            $pupil = \frontend\models\Pupils::findOne($pupilID);
+            $pupildata[$pupilID]['PupilName'] = $pupil->FullName;
+            $startlingLevels = ArrayHelper::map(\frontend\models\PupilStartingLevel::find()->where(['PupilID' => $pupilID])->all(), 'StrandID', 'StartingLevel');
+
+            $form = new formReport();
+            $form->PupilID = $pupilID;
+
+
+            $_maxlevels = $this->_MaxLevels($form, $pupilID);
+            $maxlevels = [];
+
+            foreach ($_maxlevels as $_ml) {
+                $maxlevels[$_ml['SubjectID'] . ':' . $_ml['id']] = $_ml['lid'];
+            }
+//            print_r($maxlevels);
+//            exit;
+            foreach ($subjectStands as $subjectStand) {
+                $maxlevel = isset($maxlevels[$subjectStand->SubjectID . ':' . $subjectStand->AreaID]) ? $maxlevels[$subjectStand->SubjectID . ':' . $subjectStand->AreaID] : false;
+
+                if (!$maxlevel) {
+                    //  echo $subjectStand->SubjectID . ':' . $subjectStand->AreaID;
+                    $maxlevel = isset($startlingLevels[$subjectStand->AreaID]) ? $startlingLevels[$subjectStand->AreaID] : 1;
+                    //echo'lev: '. $maxlevel;
+                }
+                if ($maxlevel) {
+                    $level = (isset($levelsArray[$maxlevel])) ? ['ID' => $maxlevel, 'LevelText' => $levelsArray[$maxlevel]] : false;
+                    /*
+                     * Statments should contain all the statments for that level and strand with pupil data
+                     */
+
+                    $connection = Yii::$app->db;
+                    $sql = "Select  Statements.id, StatementText, StrandID, LevelID, PupilID, StatementID, PartiallyDate, AchievedDate, 
+            ConsolidatedDate from Statements left join PupilStatements on Statements.id = PupilStatements.StatementID and PupilID= :pupilID "
+                            . "where StrandID = :StrandID and LevelID=:LevelID";
+                    $command = $connection->createCommand($sql);
+                    $command->bindValue(':pupilID', $pupilID);
+                    $command->bindValue(':StrandID', $subjectStand->AreaID);
+                    $command->bindValue(':LevelID', $level['ID']);
+
+                    $statments = $command->queryAll();
+
+                    // $statments = \frontend\models\Statements::find()->where(['StrandID' => $subjectStand->AreaID, 'LevelID' => $level->ID])->all();
+                } else {
+                    $statments = '';
+                }
+//                $data[$pupilID][] = ['pupilName' => $pupil->FullName,
+//                    "subjectName" => $subjectStand->subject->Subject, "subject" => $subjectStand->SubjectID,
+//                    "strandName" => isset($strandArray[$subjectStand->AreaID]) ? $strandArray[$subjectStand->AreaID] : '',
+//                    "strand" => $subjectStand->AreaID, "maxLevelID" => $maxlevel, "level" => (isset($level['LevelText'])) ? $level['LevelText'] : '',
+//                    "statments" => $statments];
+
+                if (is_array($statments)) {
+                    foreach ($statments as $statment) {
+
+
+                        $standText = isset($strandArray[$subjectStand->AreaID]) ? $strandArray[$subjectStand->AreaID] : '';
+                        $strandName = isset($strandArray[$subjectStand->AreaID]) ? $strandArray[$subjectStand->AreaID] : '';
+                        $subjectName = $subjectArray[$subjectStand->SubjectID]; //$subjectStand->subject->Subject;
+                        //    $pupildata[$pupilID][$subjectName][$strandName]['Strand'] = $standText; //,'StrandName'=>'StrandSubject'=>$subjectName];
+                        $pupildata[$pupilID][$subjectName]['Subject'] = $subjectName;
+                        $pupildata[$pupilID]
+                                [$subjectName]
+                                [$subjectStand->AreaID]['Strand'] = ['strandText' => $standText, 'level' => (isset($level['LevelText']) ? $level['LevelText'] : '')];
+                        $pupildata[$pupilID]
+                                [$subjectName]
+                                [$subjectStand->AreaID]
+                                [$statment['id']] = ['StatementText' => $statment['StatementText'],
+                            'ConsolidatedDate' => $statment['ConsolidatedDate'],
+                            'AchievedDate' => $statment['AchievedDate'],
+                            'PartiallyDate' => $statment['PartiallyDate'],
+                            "Level" => (isset($level['LevelText'])) ? $level['LevelText'] : ''];
+                    }
+                }
+            }
+        }
+//       print_r($pupildata);
+//       exit;
+        return $pupildata;
+        /*
+         * foreach ($detailedReport as $statment) {
+          $pupildata[$statment['PupilID']][$statment['Subject']]['PupilName'] = $statment['FirstName'] . ' ' . $statment['LastName'];
+
+          $pupildata[$statment['PupilID']][$statment['Subject']][$statment['StrandID']]['Strand'] = $statment['StrandText'];
+
+          $pupildata[$statment['PupilID']]
+          [$statment['Subject']]
+          [$statment['StrandID']]
+          [$statment['StatementID']] = ['StatementText' => $statment['StatementText'],
+          'ConsolidatedDate' => $statment['ConsolidatedDate'],
+          'AchievedDate' => $statment['AchievedDate'],
+          'PartiallyDate' => $statment['PartiallyDate'],];
+          }
+         */
+    }
+
+    public function CurrentLevelStatmentsCSV($provider, $filename, $title, $filter) {
+
+        $output = "$title\n";
+        $output.= "$filter\n";
+        $output.= "\"Pupil\",\"Subject\",\"Stand\",\"Level\",\"Statment\",\"Consolidated\",\"Achieved\",\"Partially\"\n";
+        foreach ($provider->getModels() as $subject) {
+            foreach ($subject as $subkeyname => $pupil) {
+                $name = (isset($pupil['PupilName']) ? $pupil['PupilName'] : '');
+                $subjectName = $subkeyname;
+                if ($subkeyname != 'PupilName') {
+                    foreach ($pupil as $p) {
+                        if (is_array($p)) {
+                            $StrandText = (isset($p['Strand']['strandText']) ? $p['Strand']['strandText'] : '');
+                            $LevelText = (isset($p['Strand']['level']) ? $p['Strand']['level'] : '');
+
+                            foreach ($p as $strand) {
+                                //print_r($strand);
+
+                                $StamentText = (isset($strand['StatementText']) ? $strand['StatementText'] : '');
+                                $Consolidated = (isset($strand['ConsolidatedDate']) ? $strand['ConsolidatedDate'] : '');
+                                $Achieved = (isset($strand['AchievedDate']) ? $strand['AchievedDate'] : '');
+                                $Partially = (isset($strand['PartiallyDate']) ? $strand['PartiallyDate'] : '');
+
+                                $output.= "\"{$name}\",\"{$subjectName}\",\"{$StrandText}\",\"{$LevelText}\",\"{$StamentText}\",\"{$Consolidated}\",\"{$Achieved}\",\"{$Partially}\"\n";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return \Yii::$app->response->sendContentAsFile($output, $filename, ['content' => 'application/octet-stream; charset=UTF-8']);
+    }
+
     /*
      * Unused
      */
+
+    public function CurrentLevelStatmentsPDF($reportForm, $pupilIDs) {
+        // get your HTML raw content without any layouts or scripts
+        $pupildata = $this->_CurrentLevelStatments($pupilIDs);
+        $providerPDF = new ArrayDataProvider([
+            'allModels' => $pupildata,
+            'pagination' => [
+                'pageSize' => -1,
+            ],
+        ]);
+        $date = date('jFY');
+        $filename = "CurrentLevelStatments-{$date}.pdf";
+        $filter = $reportForm->NiceFilterName();
+        $title = 'Current Level Statments Report';
+        $content = $this->renderPartial('pdf/_currentLevelStatmentPDF', ['pupilData' => $providerPDF]);
+//echo $content;
+//exit;
+        return $this->_CreatePDF($filename, $title, $filter, $content);
+    }
 
     public function actionPupilSummary($class = null) {
         $pupilid = 1;
@@ -687,11 +963,12 @@ class ReportController extends Controller {
         //var_dump($maxlevels);
         //exit;
         foreach ($maxlevels as $level) {
-            $command = $connection->createCommand('CALL GetPupilCurrentLevel(:pupilID,:strandid,:levelid)');
-            $command->bindValue(':pupilID', $pupilid);
-            $command->bindValue(':strandid', $level['id']);
-            $command->bindValue(':levelid', $level['lid']);
-            $levels = $command->queryAll();
+            $levels = $this->GetPupilCurrentLevel($pupilid, $level['id'], $level['lid'], $level['SubjectID']);
+//            $command = $connection->createCommand('CALL GetPupilCurrentLevel(:pupilID,:strandid,:levelid)');
+//            $command->bindValue(':pupilID', $pupilid);
+//            $command->bindValue(':strandid', $level['id']);
+//            $command->bindValue(':levelid', $level['lid']);
+//            $levels = $command->queryAll();
             $pupilData [$pupilid][$levels[0]['Subject']][] = $levels;
             //var_dump($levels);
         }
@@ -733,13 +1010,13 @@ class ReportController extends Controller {
     public function actionAssessmentGrid() {
 
         $reportForm = new formReport();
-        if ($reportForm->load(Yii::$app->request->post()) && $reportForm->pupilID) {
+        if ($reportForm->load(Yii::$app->request->post()) && $reportForm->PupilID) {
             
         } else {
             return $this->render('assessment-grid', ['reportForm' => $reportForm
             ]);
         }
-        $pupilid = $reportForm->pupilID;
+        $pupilid = $reportForm->PupilID;
 
         $pupil = \frontend\models\Pupils::findOne($pupilid);
         if (!$pupil) {
@@ -770,9 +1047,9 @@ class ReportController extends Controller {
             $years[] = date('Y', $DateAtEndofEYFS) + $i;
         }
         $assessmentGridData = new assementgrid($years[0], $pupil);
-        echo '<pre>';
-        print_r($assessmentGridData);
-        exit;
+//        echo '<pre>';
+//        print_r($assessmentGridData);
+//        exit;
 //        $terms = [ '-03-10', '-08-19', '-12-30'];
 //        $pupilData = [];
 //        $excelData = new assementgrid();
@@ -1028,11 +1305,11 @@ class ReportController extends Controller {
         $objPHPExcel->getActiveSheet()->getStyle($col . $rowstart . ':' . $col . ($endrow))->applyFromArray($style['light']);
         $col++;
         //Target
-         $objPHPExcel = $this->_writeCol($objPHPExcel, $listOfStrands, $year->target, $col, $rowstart, $year->startYearDate + 1);
+        $objPHPExcel = $this->_writeCol($objPHPExcel, $listOfStrands, $year->target, $col, $rowstart, $year->startYearDate + 1);
         $objPHPExcel->getActiveSheet()->getStyle($col . $rowstart . ':' . $col . ($endrow))->applyFromArray($style['dark']);
         $col++;
         //Reviewed Target
-         $objPHPExcel = $this->_writeCol($objPHPExcel, $listOfStrands, $year->reviewedTarget, $col, $rowstart, $year->startYearDate + 1);
+        $objPHPExcel = $this->_writeCol($objPHPExcel, $listOfStrands, $year->reviewedTarget, $col, $rowstart, $year->startYearDate + 1);
         $objPHPExcel->getActiveSheet()->getStyle($col . $rowstart . ':' . $col . ($endrow))->applyFromArray($style['dark']);
         $col++;
         $objPHPExcel = $this->_writeCol($objPHPExcel, $listOfStrands, $year->summer2, $col, $rowstart, $year->startYearDate + 1);
@@ -1086,7 +1363,7 @@ class assementgrid {
 
     public function __construct($FirstYear, $pupil) {
         //TODO: Brake after current date
-$this->pupil = $pupil;
+        $this->pupil = $pupil;
         $this->EYFS = new assessmentgridEYFS($FirstYear, $pupil->ID);
         // $FirstYear++;
         $this->Year1 = new assessmentgridYearData($FirstYear, $pupil->ID);
@@ -1122,67 +1399,66 @@ $this->pupil = $pupil;
     function targets() {
         $query = new \yii\db\Query;
 // compose the query
-        $dataOut=[];
+        $dataOut = [];
         $query->select('*')
                 ->from('Targets')
-                 ->innerJoin('SubjectAreas', 'SubjectAreas.AreaID = Targets.StrandID')
+                ->innerJoin('SubjectAreas', 'SubjectAreas.AreaID = Targets.StrandID')
                 //->innerJoin('LevelText','LevelText.ID= Targets')
                 ->where(['pupilid' => $this->pupil->ID]);
 //                ->andwhere(['<=', 'ConsolidatedDate', $this->yearDate . self::Summer2TermEnd])
 //                ->groupBy('subjectid, strandid');
 
         $rows = $query->all();
-        $listofLevels = ArrayHelper::map(\frontend\models\LevelsText::find()->all(),'ID','LevelText');
-        $listofLevels[null]='';
+        $listofLevels = ArrayHelper::map(\frontend\models\LevelsText::find()->all(), 'ID', 'LevelText');
+        $listofLevels[null] = '';
 //          echo '<pre>';
 //        print_r($listofLevels);
 //        exit;
         foreach ($rows as $row) {
-            $this->Year1->target[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year1Target']];
-            $this->Year1->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year1ReviewedTarget']];
-            
-            $this->Year2->target[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year2Target']];
-            $this->Year2->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year2ReviewedTarget']];
-            
-             $this->Year3->target[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year3Target']];
-            $this->Year3->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year3ReviewedTarget']];
-            
-             $this->Year4->target[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year4Target']];
-            $this->Year4->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year4ReviewedTarget']];
-            
-             $this->Year5->target[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year5Target']];
-            $this->Year5->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year5ReviewedTarget']];
-            
-             $this->Year6->target[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year6Target']];
-            $this->Year6->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year6ReviewedTarget']];
-            
-             $this->Year7->target[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year7Target']];
-            $this->Year7->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year7ReviewedTarget']];
-            
-             $this->Year8->target[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year8Target']];
-            $this->Year8->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year8ReviewedTarget']];
-            
-            $this->Year9->target[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year9Target']];
-            $this->Year9->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year9ReviewedTarget']];
-            
-            $this->Year10->target[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year10Target']];
-            $this->Year10->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year10ReviewedTarget']];
-            
-            $this->Year11->target[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year11Target']];
-            $this->Year11->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year11ReviewedTarget']];
-            
-            $this->Year12->target[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year12Target']];
-            $this->Year12->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year12ReviewedTarget']];
-            
-            $this->Year13->target[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year13Target']];
-            $this->Year13->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year13ReviewedTarget']];
-            
-            $this->Year14->target[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year14Target']];
-            $this->Year14->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']]=$listofLevels[$row['year14ReviewedTarget']];
-          //  $dataOut[$row['SubjectID'] . ':' . $row['StrandID']] = $row;
+            $this->Year1->target[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year1Target']];
+            $this->Year1->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year1ReviewedTarget']];
+
+            $this->Year2->target[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year2Target']];
+            $this->Year2->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year2ReviewedTarget']];
+
+            $this->Year3->target[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year3Target']];
+            $this->Year3->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year3ReviewedTarget']];
+
+            $this->Year4->target[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year4Target']];
+            $this->Year4->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year4ReviewedTarget']];
+
+            $this->Year5->target[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year5Target']];
+            $this->Year5->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year5ReviewedTarget']];
+
+            $this->Year6->target[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year6Target']];
+            $this->Year6->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year6ReviewedTarget']];
+
+            $this->Year7->target[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year7Target']];
+            $this->Year7->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year7ReviewedTarget']];
+
+            $this->Year8->target[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year8Target']];
+            $this->Year8->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year8ReviewedTarget']];
+
+            $this->Year9->target[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year9Target']];
+            $this->Year9->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year9ReviewedTarget']];
+
+            $this->Year10->target[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year10Target']];
+            $this->Year10->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year10ReviewedTarget']];
+
+            $this->Year11->target[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year11Target']];
+            $this->Year11->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year11ReviewedTarget']];
+
+            $this->Year12->target[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year12Target']];
+            $this->Year12->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year12ReviewedTarget']];
+
+            $this->Year13->target[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year13Target']];
+            $this->Year13->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year13ReviewedTarget']];
+
+            $this->Year14->target[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year14Target']];
+            $this->Year14->reviewedTarget[$row['SubjectID'] . ':' . $row['StrandID']] = $listofLevels[$row['year14ReviewedTarget']];
+            //  $dataOut[$row['SubjectID'] . ':' . $row['StrandID']] = $row;
         }
         return $dataOut;
-      
     }
 
 }
@@ -1335,7 +1611,7 @@ class assessmentgridEYFS {
         $reportForm->dateFrom = '1970-08-10';
         $reportForm->dateTo = $this->yearDate . $termdate; //'-12-30';
         $maxlevels = ReportController::_MaxLevels($reportForm, $this->pupilid);
-      //  $connection = Yii::$app->db;
+        //  $connection = Yii::$app->db;
         //echo $reportForm->dateTo;
         //echo count($maxlevels)."\n";
         $dataOut = [];

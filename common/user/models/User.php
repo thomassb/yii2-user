@@ -14,7 +14,7 @@ use ReflectionClass;
  * This is the model class for table "tbl_user".
  *
  * @property string    $id
- * @property string    $RoleID
+ * @property string    $role_id
  * @property integer   $status
  * @property string    $email
  * @property string    $new_email
@@ -24,7 +24,7 @@ use ReflectionClass;
  * @property string    $login_ip
  * @property string    $login_time
  * @property string    $create_ip
- * @property string    $create_time
+ * @property string    $Created
  * @property string    $update_time
  * @property integer   $SchoolID
 
@@ -102,7 +102,7 @@ class User extends ActiveRecord implements IdentityInterface {
             [['currentPassword'], 'validateCurrentPassword', 'on' => ['account']],
             // admin crud rules
             [['role_id', 'status'], 'required', 'on' => ['admin']],
-            [['role_id', 'status'], 'integer', 'on' => ['admin']],
+                //[['role_id', 'status'], 'integer', 'on' => ['admin']],
 //            [['ban_time'], 'integer', 'on' => ['admin']],
 //            [['ban_reason'], 'string', 'max' => 255, 'on' => 'admin'],
         ];
@@ -145,7 +145,7 @@ class User extends ActiveRecord implements IdentityInterface {
             'login_ip' => Yii::t('user', 'Login Ip'),
             'login_time' => Yii::t('user', 'Login Time'),
             'create_ip' => Yii::t('user', 'Create Ip'),
-            'create_time' => Yii::t('user', 'Create Time'),
+            'Created' => Yii::t('user', 'Create Time'),
 //            'update_time' => Yii::t('user', 'Update Time'),
 //            'ban_time'    => Yii::t('user', 'Ban Time'),
 //            'ban_reason'  => Yii::t('user', 'Ban Reason'),
@@ -167,7 +167,7 @@ class User extends ActiveRecord implements IdentityInterface {
                     return date("Y-m-d H:i:s");
                 },
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_time',
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'Created',
                 ],
             ],
         ];
@@ -278,7 +278,7 @@ class User extends ActiveRecord implements IdentityInterface {
         if (isset($dirtyAttributes["password"])) {
             $this->newPassword = $dirtyAttributes["password"];
         }
-
+$this->SchoolID =  \Yii::$app->user->identity->SchoolID;
         // hash new password if set
         if ($this->newPassword) {
             $this->password = Yii::$app->security->generatePasswordHash($this->newPassword);
@@ -292,6 +292,16 @@ class User extends ActiveRecord implements IdentityInterface {
         $nullAttributes = ["email", "username"];
         foreach ($nullAttributes as $nullAttribute) {
             $this->$nullAttribute = $this->$nullAttribute ? $this->$nullAttribute : null;
+        }
+
+        //assign role
+        // the following three lines were added:
+        $auth = \Yii::$app->authManager;
+        $rolename = Role::findOne($this->role_id);
+        $authorRole = $auth->getRole(strtolower($rolename->name));
+        if ($authorRole) {
+            $auth->revokeAll($this->id);
+            $auth->assign($authorRole, $this->id);
         }
 
         return parent::beforeSave($insert);
@@ -404,6 +414,7 @@ class User extends ActiveRecord implements IdentityInterface {
         // check for auth manager rbac
         $auth = Yii::$app->getAuthManager();
         if ($auth) {
+
             if ($allowCaching && empty($params) && isset($this->_access[$permissionName])) {
                 return $this->_access[$permissionName];
             }
@@ -514,17 +525,18 @@ class User extends ActiveRecord implements IdentityInterface {
     /*
      * Theme stuff
      */
+
     public $theme;
     public $assetfolder;
-    
-    private function _doThemeStuff(){
-          $theme='sheringham';
-          $this->directoryAsset2 = \Yii::$app->assetManager->getPublishedUrl('@web/themes/'.$theme.'/images');
-           \Yii::$app->view->theme = new base\Theme([
-            'pathMap' => ['@app/views' => [ '@app/themes/'.$theme,'@app/themes/main/'] ],
-            'baseUrl' => '@web/themes/'.$theme,
-           'basePath' => '@app/themes/main',
 
-        ]);  
+    private function _doThemeStuff() {
+        $theme = 'sheringham';
+        $this->directoryAsset2 = \Yii::$app->assetManager->getPublishedUrl('@web/themes/' . $theme . '/images');
+        \Yii::$app->view->theme = new base\Theme([
+            'pathMap' => ['@app/views' => [ '@app/themes/' . $theme, '@app/themes/main/']],
+            'baseUrl' => '@web/themes/' . $theme,
+            'basePath' => '@app/themes/main',
+        ]);
     }
+
 }

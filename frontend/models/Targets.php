@@ -55,7 +55,11 @@ class Targets extends \yii\db\ActiveRecord
     {
         return [
             [['PupilID', 'StrandID'], 'required'],
-            [['PupilID', 'year1Target', 'year1ReviewedTarget', 'year2Target', 'year2ReviewedTarget', 'year3Target', 'year3ReviewedTarget', 'year4Target', 'year4ReviewedTarget', 'year5Target', 'year5ReviewedTarget', 'year6Target', 'year6ReviewedTarget', 'year7Target', 'year8ReviewedTarget', 'year9Target', 'year9ReviewedTarget', 'year10Target', 'year10ReviewedTarget', 'year11Target', 'year11ReviewedTarget', 'year12Target', 'year12ReviewedTarget', 'year13Target', 'year13ReviewedTarget', 'year14Target', 'year14ReviewedTarget'], 'integer'],
+            [['PupilID', 'year1Target', 'year1ReviewedTarget', 'year2Target', 'year2ReviewedTarget', 'year3Target', 
+                'year3ReviewedTarget', 'year4Target', 'year4ReviewedTarget', 'year5Target', 'year5ReviewedTarget', 
+                'year6Target', 'year6ReviewedTarget', 'year7Target','year7ReviewedTarget','year8Target', 'year8ReviewedTarget', 'year9Target', 'year9ReviewedTarget', 
+                'year10Target', 'year10ReviewedTarget', 'year11Target', 'year11ReviewedTarget', 'year12Target', 'year12ReviewedTarget', 
+                'year13Target', 'year13ReviewedTarget', 'year14Target', 'year14ReviewedTarget'], 'integer'],
             [['created'], 'safe'],
         ];
     }

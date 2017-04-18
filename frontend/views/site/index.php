@@ -1,11 +1,14 @@
 <?php
 /* @var $this yii\web\View */
 
+use common\widgets\ReportListView;
+use yii\bootstrap\Html;
+
 $this->title = 'Dashboard';
 ?>
 <div class="site-index">
     <div class="col-sm-6">
-<div class="box box-solid ">
+        <div class="box box-solid ">
             <div class="box-header bg-blue-gradient">
                 <i class="fa fa-calendar"></i>
 
@@ -13,16 +16,18 @@ $this->title = 'Dashboard';
                 <!-- tools box -->
                 <div class="pull-right box-tools">
                     <!-- button with a dropdown -->
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown">
-                            <i class="fa fa-bars"></i></button>
-                        <ul class="dropdown-menu pull-right" role="menu">
-                            <li><a href="#">Add bulletin item</a></li>
-                            <li><a href="#">Edit bulletins</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#">View all bulletins</a></li>
-                        </ul>
-                    </div>
+<?php if (Yii::$app->user->can("bulletins")) { ?>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-bars"></i></button>
+                            <ul class="dropdown-menu pull-right" role="menu">
+                                <li><?= Html::a('New bulletin', ['bulletins/create']); ?></li>
+                                <li class="divider"></li>
+                                <li><?= Html::a('View bulletins', ['bulletins']); ?></li>
+
+                            </ul>
+                        </div>
+<?php }; ?>
                     <button type="button" class="btn btn-success btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
                     </button>
                     <button type="button" class="btn btn-success btn-sm" data-widget="remove"><i class="fa fa-times"></i>
@@ -32,70 +37,20 @@ $this->title = 'Dashboard';
             </div>
             <!-- /.box-header -->
             <div class="box-body ">
+                <?php
+                echo ReportListView::widget([
+                    'dataProvider' => $BulletinsdataProvider,
+                    'itemOptions' => [],
+                    'itemView' => '/bulletins/_bulletin',
+                    // 'summary' => '',
+                    'layout' => '<div class="pull-right">{summary}</div>
                <div id="timeline" class="tab-pane active">
-                <!-- The timeline -->
-                <ul class="timeline timeline-inverse">
-                  <!-- timeline time label -->
-                  <li class="time-label">
-                        <span class="bg-red">
-                          10 Sep. 2016
-                        </span>
-                  </li>
-                  <!-- /.timeline-label -->
-                  <!-- timeline item -->
-                  <li>
-                    <i class="fa fa-envelope bg-blue"></i>
-
-                    <div class="timeline-item">
-                      <span class="time"><i class="fa fa-clock-o"></i> 12:05</span>
-
-                      <h3 class="timeline-header"><a href="#">Lorem ipsum </a></h3>
-
-                      <div class="timeline-body">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque 
-                        in nisl bibendum ante pellentesque aliquam. Integer hendrerit pharetra 
-                        sapien eget aliquam. Sed nec ante eros. Curabitur vel nisi non sapien 
-                        pulvinar pulvinar. Duis sodales, neque vel lobortis laoreet, nunc mi accumsan
-                        ....
-                      </div>
-                      <div class="timeline-footer">
-                        <a class="btn btn-primary btn-xs">Read more</a>
-                       
-                      </div>
-                    </div>
-                  </li>
-                    <li class="time-label">
-                        <span class="bg-red">
-                          8 Sep. 2016
-                        </span>
-                  </li>
-                          <li>
-                    <i class="fa fa-envelope bg-blue"></i>
-
-                    <div class="timeline-item">
-                      <span class="time"><i class="fa fa-clock-o"></i> 12:05</span>
-
-                      <h3 class="timeline-header"><a href="#">Lorem ipsum </a></h3>
-
-                      <div class="timeline-body">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque 
-                        in nisl bibendum ante pellentesque aliquam. Integer hendrerit pharetra 
-                        sapien eget aliquam. Sed nec ante eros. Curabitur vel nisi non sapien 
-                        pulvinar pulvinar. Duis sodales, neque vel lobortis laoreet, nunc mi accumsan
-                        ....
-                      </div>
-                      <div class="timeline-footer">
-                        <a class="btn btn-primary btn-xs">Read more</a>
-                       
-                      </div>
-                    </div>
-                  </li>
-                 
-                  <li>
+                <ul class="timeline timeline-inverse">{items}<li>
                     <i class="fa fa-clock-o bg-gray"></i>
                   </li>
-                </ul>
-              </div>
+                </ul> </div>{pager}',
+                ]);
+                ?> 
             </div>
             <!-- /.box-body -->
             <div class="box-footer text-black">
@@ -134,22 +89,22 @@ $this->title = 'Dashboard';
             <div class="box-body no-padding">
                 <!--The calendar -->
                 <div id="calendar" class="home-datepicker">
-               <?php
-               echo kartik\widgets\DatePicker::widget([
-    'name' => 'dp_5',
-    'type' => kartik\widgets\DatePicker::TYPE_INLINE,
-   // 'value' => 'Tue, 23-Feb-1982',
-    'pluginOptions' => [
-        'format' => 'D, dd-M-yyyy',
-      
-    ],
-    'options' => [
-        'style'=>'width:100%',
-        // you can hide the input by setting the following
-         'class' => 'hide '
-    ]
-]);?>
-               </div>
+                    <?php
+                    echo kartik\widgets\DatePicker::widget([
+                        'name' => 'dp_5',
+                        'type' => kartik\widgets\DatePicker::TYPE_INLINE,
+                        // 'value' => 'Tue, 23-Feb-1982',
+                        'pluginOptions' => [
+                            'format' => 'D, dd-M-yyyy',
+                        ],
+                        'options' => [
+                            'style' => 'width:100%',
+                            // you can hide the input by setting the following
+                            'class' => 'hide '
+                        ]
+                    ]);
+                    ?>
+                </div>
             </div>
             <!-- /.box-body -->
             <div class="box-footer text-black">

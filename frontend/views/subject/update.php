@@ -112,7 +112,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 $(document).on('click', '.remove-item', function() {
 
    var rowid = $(this).data('rowid');
-       alert(rowid);
+      
     if(rowid=='')
     {return false;}
     $(this).append(\"<i class='icon-spinner icon-spin icon-large spin address-search-load'></i>\");

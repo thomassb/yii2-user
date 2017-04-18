@@ -48,6 +48,8 @@ class TrackerController extends Controller {
 
 
         $searchModel = new \frontend\models\search\Statements();
+         $reportForm = new \frontend\models\forms\formReport();
+        //$reportForm->load(Yii::$app->request->getQueryParams());
 //        $searchModel->PupilID = 1;
 //        $queryParams["Statements"]["LevelID"] = 1;
 //        $queryParams["Statements"]["StrandID"] = 1;
@@ -55,7 +57,7 @@ class TrackerController extends Controller {
 
         //$dataProvider = $searchModel->search($queryParams);
         $pupil =null;// \frontend\models\Pupils::findOne(['id' => $searchModel->PupilID]);
-        return $this->render('index', ['searchModel' => $searchModel,  'pupil' => $pupil]);
+        return $this->render('index', ['searchModel' => $reportForm,  'pupil' => $pupil]);
     }
 
     public function actionAjaxPupilPage() {

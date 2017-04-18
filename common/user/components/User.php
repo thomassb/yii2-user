@@ -102,9 +102,11 @@ class User extends \yii\web\User
      */
     public function can($permissionName, $params = [], $allowCaching = true)
     {
+         
         // check for auth manager to call parent
         $auth = Yii::$app->getAuthManager();
         if ($auth) {
+          
             return parent::can($permissionName, $params, $allowCaching);
         }
 

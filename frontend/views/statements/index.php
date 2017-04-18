@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'StatementText:ntext',
                     'strand.StrandText',
                     'level.LevelText',
-                    ['class' => 'yii\grid\ActionColumn'],
+                    ['class' => 'yii\grid\ActionColumn','template' => '{view} {update}'],
                 ],
             ]);
             ?>

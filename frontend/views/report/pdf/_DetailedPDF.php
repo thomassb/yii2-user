@@ -25,19 +25,27 @@
                 <?php
                 $rowodd = 0;
                 if (is_array($level)) {
-                    foreach ($level as $Statments) {
+                    foreach ($level as $levelText => $Statments) {
                         //    echo print_r($Statment);
                         if (is_array($Statments)) {
-                            if ($rowodd % 2 == 0) {
-                                $row = "even";
-                            } else {
-                                $row = 'odd';
+
+                            echo '<tr ><td  colspan="4"><b>' . $levelText . '</b></td></tr>';
+                            foreach ($Statments as $statment) {
+                                if ($rowodd % 2 == 0) {
+                                    $row = "even";
+                                } else {
+                                    $row = 'odd';
+                                }
+                                echo '<tr class="' . $row . '"><td>' . $statment['StatementText'] . '</td> '
+                                . '<td>' . $statment['ConsolidatedDate'] . '</td> '
+                                . '<td>' . $statment['AchievedDate'] . '</td> '
+                                . '<td>' . $statment['PartiallyDate'] . '</td> </tr>';
+                                $rowodd++;
                             }
-                            echo '<tr class="' . $row . '"><td>' . $Statments['StatementText'] . '</td> '
-                            . '<td>' . $Statments['ConsolidatedDate'] . '</td> '
-                            . '<td>' . $Statments['AchievedDate'] . '</td> '
-                            . '<td>' . $Statments['PartiallyDate'] . '</td> </tr>';
-                            $rowodd++;
+//                            echo '<tr "><td>' . $Statments['StatementText'] . '</td> '
+//                            . '<td>' . $Statments['ConsolidatedDate'] . '</td> '
+//                            . '<td>' . $Statments['AchievedDate'] . '</td> '
+//                            . '<td>' . $Statments['PartiallyDate'] . '</td> </tr>';
                         } else {
                             //Strand name
                             echo '<tr  class="warning"><td >' . $Statments . '</td>'
@@ -62,7 +70,7 @@
 
             <?php
         }
-         echo ' <tr class="spacer">
+        echo ' <tr class="spacer">
                     <td></td>
                     <td></td>
                 </tr>';

@@ -72,9 +72,11 @@ class PupilsController extends Controller {
      * @return mixed
      */
     public function actionCreate() {
-        $model = new Pupils();
+        $model = new Pupils(['SchoolID' => \Yii::$app->user->identity->SchoolID,'UserID' => \Yii::$app->user->identity->id]);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) &&  $model->save() ) {
+           
+           
             return $this->redirect(['view', 'id' => $model->ID]);
         } else {
             return $this->render('create', [

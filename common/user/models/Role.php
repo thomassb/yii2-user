@@ -120,6 +120,12 @@ class Role extends ActiveRecord
     {
         // get and cache data
         static $dropdown;
+//      $auth = Yii::$app->getAuthManager();
+//        if ($auth) {
+////            print_r($auth->getRoles());
+////            exit;
+//          return \yii\helpers\ArrayHelper::map($auth->getRoles(),'name','name');
+//        }
         if ($dropdown === null) {
 
             // get all records from database and generate

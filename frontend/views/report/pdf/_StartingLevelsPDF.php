@@ -10,7 +10,7 @@
      
       ?> 
         <tr>
-        <td colspan="2" class="active"><h2 class="margin-bottom-none"><?= ($model['name']) ?></h2></td>
+        <td colspan="3" class="active"><h2 class="margin-bottom-none"><?= ($model['name']) ?></h2></td>
     </tr>
 
 
@@ -19,7 +19,7 @@
         if ($key != 'name') {
             ?>
             <tr>
-                <td colspan="2" class="info"><?= $key ?></td>
+                <td colspan="3" class="info"><?= $key ?></td>
             </tr>
 
             <?php
@@ -36,6 +36,7 @@
                 <tr class="<?= $row ?>">
                     <td><?= $level["strand"] ?></td>
                     <td><?= $level["Level"] ?></td>
+                    <td><?= ($level['Date']=='0000-00-00 00:00:00'?'':\Yii::$app->formatter->asDate($level['Date'],'php:Y-m-d'))?> </td>
                 </tr>
                 <?php
                  $rowodd++;

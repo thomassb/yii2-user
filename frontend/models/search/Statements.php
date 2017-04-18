@@ -14,6 +14,7 @@ class Statements extends StatementsModel {
 
    // public $SubjectID;
     public $displayAllLevels = 0;
+    public $classID;
     /**
      * @inheritdoc
      */

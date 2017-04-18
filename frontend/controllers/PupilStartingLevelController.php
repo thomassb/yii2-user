@@ -115,6 +115,10 @@ class PupilStartingLevelController extends Controller {
         }
     }
 
+    /*
+     * Used to add a startling level
+     */
+
     public function actionAdd() {
         $_params = Yii::$app->request->post();
         $_response = new \common\helpers\jsonResponse();
@@ -122,6 +126,8 @@ class PupilStartingLevelController extends Controller {
             $level = intval($_params['levelid']);
             $strand = intval($_params['strandid']);
             $pupilid = intval($_params['pupil']);
+            $date = Yii::$app->formatter->asDate(time(), 'php:Y-m-d H:i:s');
+
 
             $startinglevel = PupilStartingLevel::find()->where(['PupilID' => $pupilid, 'StrandID' => $strand])->one();
             if (!$startinglevel) {
@@ -129,12 +135,15 @@ class PupilStartingLevelController extends Controller {
                 $newStartingLevel->PupilID = $pupilid;
                 $newStartingLevel->StrandID = $strand;
                 $newStartingLevel->StartingLevel = $level;
+                $startinglevel->LevelDate = $date;
                 $result = $newStartingLevel->save();
             } else {
-               
-                $startinglevel->StartingLevel = $level;
-                $result = $startinglevel->save();
-               
+                if ($startinglevel->StartingLevel != $level) {
+                    $startinglevel->StartingLevel = $level;
+                    $startinglevel->LevelDate = $date;
+                  
+                    $result = $startinglevel->save();
+                }
             }
 
             if ($result === true) {//return 200
@@ -174,7 +183,7 @@ class PupilStartingLevelController extends Controller {
                 $_response->sendResponse(200, $_response->encodedData, 'text/json');
             } else {//return !200
                 $_response->status = \common\helpers\jsonResponse::STATUS_ERROR;
-                $_response->errors = $_response->errorsToString($strandSubjectLink->errors);
+                $_response->errors = $_response->errorsToString($startingLevel->errors);
                 $_response->encode();
 
 

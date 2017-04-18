@@ -1,6 +1,7 @@
 <?php
 
 namespace common\imports;
+
 /**
  * Description of main
  *
@@ -26,16 +27,16 @@ class main {
         $fileloc = __DIR__ . "/PupilStatements.txt";
 
         $file = fopen($fileloc, 'r');
-   // $connection = \Yii::$app->db;
-    //$transaction = $connection->beginTransaction();
-$data = [];
+        // $connection = \Yii::$app->db;
+        //$transaction = $connection->beginTransaction();
+        $data = [];
 
         while ($line = fgets($file)) {
             list($pupilid, $statmentid, $partiallydate, $achiieveddate, $consolidateddate) = explode(',', trim(str_replace('"', '', $line)));
-            $data[]=[$pupilid, $statmentid,  
-                ($partiallydate?\Yii::$app->formatter->asDatetime(strtotime(str_replace('/', '-',$partiallydate)), "php:Y-m-d"):NULL), 
-                ($achiieveddate?\Yii::$app->formatter->asDatetime(strtotime(str_replace('/', '-',$achiieveddate)), "php:Y-m-d"):NULL), 
-                ($consolidateddate?\Yii::$app->formatter->asDatetime(strtotime(str_replace('/', '-',$consolidateddate)), "php:Y-m-d"):NULL)];
+            $data[] = [$pupilid, $statmentid,
+                ($partiallydate ? \Yii::$app->formatter->asDatetime(strtotime(str_replace('/', '-', $partiallydate)), "php:Y-m-d") : NULL),
+                ($achiieveddate ? \Yii::$app->formatter->asDatetime(strtotime(str_replace('/', '-', $achiieveddate)), "php:Y-m-d") : NULL),
+                ($consolidateddate ? \Yii::$app->formatter->asDatetime(strtotime(str_replace('/', '-', $consolidateddate)), "php:Y-m-d") : NULL)];
 //            $_ps = new \frontend\models\PupilStatements();
 //           // var_dump( $consolidateddate);
 //            $_ps->PupilID = $pupilid;
@@ -56,11 +57,9 @@ $data = [];
             // exit;
             // do stuff with variables 
         }
-       // $transaction->commit();
-        \Yii::$app->db->createCommand()->batchInsert( \frontend\models\PupilStatements::tableName(), ['PupilID', 'StatementID','PartiallyDate','AchievedDate','ConsolidatedDate'], 
-   $data
-)->execute();
-
+        // $transaction->commit();
+        \Yii::$app->db->createCommand()->batchInsert(\frontend\models\PupilStatements::tableName(), ['PupilID', 'StatementID', 'PartiallyDate', 'AchievedDate', 'ConsolidatedDate'], $data
+        )->execute();
     }
 
 }

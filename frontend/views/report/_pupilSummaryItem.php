@@ -5,7 +5,7 @@
 
 
     <tr>
-        <td colspan="2" class="active"><h2 class="margin-bottom-none"><?= ($model[key($model)][0]['pid']) ?> - <?=($model[key($model)][0]['name'])?></h2></td>
+        <td colspan="2" class="active"><h2 class="margin-bottom-none"><?=($model[key($model)][0]['name'])?></h2></td>
     </tr>
 
 

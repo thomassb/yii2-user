@@ -11,7 +11,7 @@ use Yii;
  * @property integer $PupilID
  * @property integer $StrandID
  * @property integer $StartingLevel
- *
+ * @property string $LevelDate
  * @property Strands $strand
  * @property Pupils $pupil
  */
@@ -33,6 +33,7 @@ class PupilStartingLevel extends \yii\db\ActiveRecord
         return [
             [['PupilID', 'StrandID'], 'required'],
             [['PupilID', 'StrandID', 'StartingLevel'], 'integer'],
+            ['LevelDate','safe'],
             [['StrandID'], 'exist', 'skipOnError' => true, 'targetClass' => Strands::className(), 'targetAttribute' => ['StrandID' => 'ID']],
             [['PupilID'], 'exist', 'skipOnError' => true, 'targetClass' => Pupils::className(), 'targetAttribute' => ['PupilID' => 'ID']],
         ];

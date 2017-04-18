@@ -47,14 +47,14 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'UserID',
             // 'SchoolID',
             // 'Created',
-            ['class' => 'yii\grid\ActionColumn', 'template' => '{update}  {delete}',
+            ['class' => 'yii\grid\ActionColumn', 'template' => '{update}',
                     ],
             
             
         ],
-        'rowOptions' => function ($model, $key, $index, $grid) {
-                return ['class'=>'clickable-row', 'onclick' => 'alert(this.id);'];
-        },
+//        'rowOptions' => function ($model, $key, $index, $grid) {
+//                return ['class'=>'clickable-row', 'onclick' => 'alert(this.id);'];
+//        },
     ]);
     ?>
         </div>

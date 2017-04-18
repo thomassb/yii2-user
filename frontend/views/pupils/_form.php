@@ -34,7 +34,15 @@ use kartik\widgets\DatePicker;
         'autoclose'=>true
     ]
 ]);?>
- 
+ <?=
+    $form->field($model, 'PupilPremium')->widget(\kartik\widgets\SwitchInput::classname(), [
+              'pluginOptions'=>[
+       // 'handleWidth'=>60,
+        'onText'=>'Yes',
+        'offText'=>'No'
+    ]
+    ]);
+    ?>
     
     
 <!--Root user only-->

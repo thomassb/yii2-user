@@ -34,10 +34,10 @@ use yii\bootstrap\Html;
         <?=
         dmstr\widgets\Menu::widget(
                 [
-                    'options' => ['class' => 'sidebar-menu'],
+                    'options' => ['class' => 'sidebar-menu  margin-bottom'],
                     'items' => [
                         ['label' => 'Pupil data entry',
-                            'icon' => 'fa  fa-users',
+                            'icon' => 'fa  fa-user',
                             'url' => ['/tracker'],
 //                                'items' => [
 //                                     ['label' => 'View', 'icon' => 'fa fa-users', 'url' => ['/news']],
@@ -49,6 +49,7 @@ use yii\bootstrap\Html;
                             'icon' => 'fa  fa-file',
                             'url' => '#',
                             'items' => [
+                                  ['label' => 'Current Level Statments', 'icon' => 'fa  fa-file', 'url' => ['/report/current-level-statments']],
                                 ['label' => 'Summary Report', 'icon' => 'fa  fa-file', 'url' => ['/report/summary']],
                                 ['label' => 'Detailed Report', 'icon' => 'fa  fa-file', 'url' => ['/report/detailed']],
                                 ['label' => 'Starting Levels', 'icon' => 'fa  fa-file', 'url' => ['/report/starting-level']],
@@ -65,11 +66,11 @@ use yii\bootstrap\Html;
                         ['label' => 'Admin',
                             'icon' => 'fa fa-circle-o',
                             'url' => '#',
-                            'visible' => Yii::$app->user->can("admin"),
+                            'visible' => Yii::$app->user->can("adminrole"),
                             'items' => [
                                 ['label' => 'Targets', 'icon' => 'fa fa-bullseye', 'url' => ['/targets']],
                                 ['label' => 'Classes', 'icon' => 'fa fa-users', 'url' => ['/classes']],
-                                ['label' => 'Pupils', 'icon' => 'fa fa-user', 'url' => ['/pupils']],
+                                ['label' => 'Pupils', 'icon' => 'fa fa-child', 'url' => ['/pupils']],
                                 ['label' => 'Subjects', 'icon' => 'fa fa-book', 'url' => ['/subject']],
                                 ['label' => 'Strands', 'icon' => 'fa fa-tag', 'url' => ['/strand']],
                                 ['label' => 'Statements', 'icon' => 'fa  fa-tags', 'url' => ['/statements']],
@@ -112,7 +113,7 @@ use yii\bootstrap\Html;
         <div class="row">
             <div class="col-sm-10 col-sm-offset-1">
 
-<?= Html::img($url = $this->theme->baseUrl . '/images/logo.png', ['class' => 'img-responsive img-rounded']) ?>
+<?= Html::img($url = $this->theme->baseUrl . '/images/logo.jpg', ['class' => 'img-responsive img-rounded']) ?>
             </div>
         </div>
     </section>

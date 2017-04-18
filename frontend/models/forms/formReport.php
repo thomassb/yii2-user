@@ -16,13 +16,16 @@ class formReport extends Model {
     public $dateFrom;
     public $dateTo;
     public $classID;
-    public $pupilID;
+    public $PupilID;
+    public $pupilIDAjax, $pupilIDClass;
     public $subjectID;
     public $_daterange;
     public $perpage;
     public $strandID;
     public $displayAllLevels;
     public $levelID;
+    public $displayAllStatments;
+    public $PupilPremium;
 
     /**
      * @inheritdoc
@@ -32,7 +35,7 @@ class formReport extends Model {
 
 
             [['useDate'], 'required'],
-            [['classID', 'pupilID', 'subjectID','displayAllLevels'], 'integer'],
+            [['classID', 'PupilID', 'pupilIDAjax', 'pupilIDClass', 'subjectID', 'displayAllLevels','displayAllStatments','PupilPremium'], 'integer'],
             [['dateFrom', 'dateTo', '_daterange'], 'safe'],
         ];
     }
@@ -41,20 +44,28 @@ class formReport extends Model {
         if (parent::load($data, $formName) === false) {
             return false;
         } else {
-         
-            if ($this->pupilID=='') {
-               $this->pupilID=NULL;
+
+            if ($this->PupilID == '') {
+                $this->PupilID = NULL;
             }
-            if ($this->classID=='') {
-               $this->classID=NULL;
+            if ($this->classID == '') {
+                $this->classID = NULL;
             }
-            if ($this->subjectID=='') {
-                 $this->subjectID=NULL;
+            if ($this->subjectID == '') {
+                $this->subjectID = NULL;
             }
-            if ($this->displayAllLevels=='') {
-                 $this->displayAllLevels=false;
-            } 
+            if ($this->displayAllLevels == '') {
+                $this->displayAllLevels = false;
+            }
+           
+//                if ($this->pupilIDAjax) {
+//                    $this->pupilID = $this->pupilIDAjax;
+//                } elseif ($this->pupilIDClass) {
+//                    $this->pupilID = $this->pupilIDClass;
+//                }
             
+                $this->pupilIDAjax = $this->PupilID;
+                $this->pupilIDClass = $this->PupilID;
             
             $_date = explode(' - ', $this->_daterange);
             if (count($_date) == 2) {
@@ -66,18 +77,18 @@ class formReport extends Model {
     }
 
     public function getClass() {
-          $r =  Classes::findOne( ['ID' => $this->classID]);
-        return ($r)?$r: new Classes();
+        $r = Classes::findOne(['ID' => $this->classID]);
+        return ($r) ? $r : new Classes();
     }
 
     public function getPupil() {
-        $r=Pupils::findOne( ['ID' => $this->pupilID]);
-        return ($r)?$r: new Pupils();
+        $r = Pupils::findOne(['ID' => $this->PupilID]);
+        return ($r) ? $r : new Pupils();
     }
 
     public function getSubject() {
-         $r=Subjects::findOne( ['ID' => $this->subjectID]);
-         return ($r)?$r: new Subjects() ;
+        $r = Subjects::findOne(['ID' => $this->subjectID]);
+        return ($r) ? $r : new Subjects();
     }
 
     public function NiceFilterName() {
@@ -85,7 +96,7 @@ class formReport extends Model {
         if ($this->classID) {
             $niceFilter.="Class: {$this->class->ClassName} ";
         }
-        if ($this->pupilID) {
+        if ($this->PupilID) {
             $niceFilter.="Pupil: {$this->pupil->FullName} ";
         }
         if ($this->subjectID) {
