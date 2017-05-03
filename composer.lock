@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e1d394d6c246bbfedbcbe8f6ddc84a13",
-    "content-hash": "5be588f661a8aa67f7a94d401de4439a",
+    "hash": "bbe0a3d9410cebd8d92b791939188c1c",
+    "content-hash": "45390502096675d033aedc1fe8a0160b",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -392,17 +392,70 @@
             "time": "2013-12-10 17:49:58"
         },
         {
-            "name": "dektrium/yii2-user",
-            "version": "dev-master",
+            "name": "dektrium/yii2-rbac",
+            "version": "1.0.0-alpha",
             "source": {
                 "type": "git",
-                "url": "https://github.com/dektrium/yii2-user.git",
-                "reference": "d9530a1b4213c2bd7fd8eb05d185dfe9dffde558"
+                "url": "https://github.com/dektrium/yii2-rbac.git",
+                "reference": "0943e66c450132b306584a37caefc2aa04258372"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dektrium/yii2-user/zipball/d9530a1b4213c2bd7fd8eb05d185dfe9dffde558",
-                "reference": "d9530a1b4213c2bd7fd8eb05d185dfe9dffde558",
+                "url": "https://api.github.com/repos/dektrium/yii2-rbac/zipball/0943e66c450132b306584a37caefc2aa04258372",
+                "reference": "0943e66c450132b306584a37caefc2aa04258372",
+                "shasum": ""
+            },
+            "require": {
+                "kartik-v/yii2-widget-select2": "^2.0",
+                "yiisoft/yii2": "^2.0.8"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "bootstrap": "dektrium\\rbac\\Bootstrap",
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "dektrium\\rbac\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dmitry Erofeev",
+                    "email": "dmeroff@gmail.com",
+                    "homepage": "http://dmeroff.ru"
+                }
+            ],
+            "description": "RBAC management module for Yii2",
+            "keywords": [
+                "dektrium",
+                "rbac gui",
+                "rbac management",
+                "rbac module",
+                "yii rbac",
+                "yii2",
+                "yii2-rbac"
+            ],
+            "time": "2016-08-15 15:49:54"
+        },
+        {
+            "name": "dektrium/yii2-user",
+            "version": "0.9.12",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dektrium/yii2-user.git",
+                "reference": "26a4de66045fe9b9736a269d399cf5b15cfffe8b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dektrium/yii2-user/zipball/26a4de66045fe9b9736a269d399cf5b15cfffe8b",
+                "reference": "26a4de66045fe9b9736a269d399cf5b15cfffe8b",
                 "shasum": ""
             },
             "require": {
@@ -447,7 +500,7 @@
                 "yii2",
                 "yii2-user"
             ],
-            "time": "2016-08-13 15:45:38"
+            "time": "2017-01-11 20:26:20"
         },
         {
             "name": "dmstr/yii2-adminlte-asset",
@@ -3234,9 +3287,9 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "dektrium/yii2-user": 20,
         "kartik-v/yii2-dynagrid": 20,
-        "kartik-v/yii2-export": 20
+        "kartik-v/yii2-export": 20,
+        "dektrium/yii2-rbac": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

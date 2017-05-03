@@ -24,8 +24,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown">
                         <i class="fa fa-bars"></i></button>
                     <ul class="dropdown-menu pull-right" role="menu">
-                        <li><?= Html::a('New bulletin', ['bulletins/create']); ?></li>
-                        <li class="divider"></li>
+                        <?php
+                        if (Yii::$app->user->can("EditBulletins")) {
+                            echo " <li><?= Html::a('New bulletin', ['bulletins/create']); ?></li>";
+                            echo '   <li class="divider"></li>';
+                        }
+                        ?>
                         <li><?= Html::a('View bulletins', ['bulletins']); ?></li>
                     </ul>
                 </div>

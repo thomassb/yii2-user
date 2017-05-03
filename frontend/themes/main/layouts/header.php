@@ -16,7 +16,7 @@ $directoryAsset2 = Yii::$app->assetManager->getPublishedUrl('@app/themes/shering
         <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
             <span class="sr-only">Toggle navigation</span>
         </a>
-        <span class="schoolname"><?=Yii::$app->user->SchoolName ?></span>
+        <span class="schoolname">Sheringham Woodfields</span>
         <div class="navbar-custom-menu">
 
             <ul class="nav navbar-nav">
@@ -241,16 +241,20 @@ $directoryAsset2 = Yii::$app->assetManager->getPublishedUrl('@app/themes/shering
 
                 <li class="dropdown user user-menu ">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <?= yii\bootstrap\Html::img('@web/uploads/users/' . \Yii::$app->user->identity->profile->myavatar,['class'=>'user-image','alt'=>"User Image"])?>
-                
+                        <?= Html::img(\Yii::$app->user->identity->profile->getAvatarUrl(230), [
+                    'class' => 'user-image',
+                    'alt' => \Yii::$app->user->identity->Fullname,
+                ]) ?>
                       
-                        <span class="hidden-xs"><?=Yii::$app->user->displayName ?></span>
+                        <span class="hidden-xs"><?= Yii::$app->user->identity->Fullname ?></span>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- User image -->
                         <li class="user-header">
-                             <?= yii\bootstrap\Html::img('@web/uploads/users/' . \Yii::$app->user->identity->profile->myavatar,['class'=>'img-circle','alt'=>"User Image"])?>
-                
+                              <?= Html::img(\Yii::$app->user->identity->profile->getAvatarUrl(230), [
+                    'class' => 'img-circle ',
+                    'alt' => \Yii::$app->user->identity->Fullname,
+                ]) ?>
                         
 
 <!--                            <p>

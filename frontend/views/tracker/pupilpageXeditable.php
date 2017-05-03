@@ -46,7 +46,7 @@ use yii\bootstrap\Html;
                         return'<span class="x-edit editable-click" data-type="date" data-pk="' . $pk . '" data-url="' .
                                 Url::to(['tracker/ajax-save', 'StatementID' => $model->ID,
                                     'PupilID' => $pupilid, 'Type' => 'PartiallyDate', 'PupilStatementID' => $model->pupilStatement->ID])
-                                . '">' . $model->pupilStatement->PartiallyDate;
+                                . '">' .  \Yii::$app->formatter->asDatetime($model->pupilStatement->PartiallyDate, "php:d-m-Y");
                     },
                     'header' => 'Partially Date',
                     'width' => '140px',
@@ -58,7 +58,7 @@ use yii\bootstrap\Html;
                         return'<span class="x-edit editable-click" data-type="date" data-pk="' . $pk . '" data-url="' .
                                 Url::to(['tracker/ajax-save', 'StatementID' => $model->ID,
                                     'PupilID' => $pupilid, 'Type' => 'AchievedDate', 'PupilStatementID' => $model->pupilStatement->ID])
-                                . '">' . $model->pupilStatement->AchievedDate;
+                                . '">' .  \Yii::$app->formatter->asDatetime($model->pupilStatement->AchievedDate, "php:d-m-Y");
                     },
                     'header' => 'Achieved Date',
                     'width' => '140px',
@@ -70,7 +70,7 @@ use yii\bootstrap\Html;
                         return'<span class="x-edit editable-click" data-type="date" data-pk="' . $pk . '" data-url="' .
                                 Url::to(['tracker/ajax-save', 'StatementID' => $model->ID,
                                     'PupilID' => $pupilid, 'Type' => 'ConsolidatedDate', 'PupilStatementID' => $model->pupilStatement->ID])
-                                . '">' . $model->pupilStatement->ConsolidatedDate;
+                                . '">' .  \Yii::$app->formatter->asDatetime($model->pupilStatement->ConsolidatedDate, "php:d-m-Y");
                     },
                     'header' => 'Consolidated Date',
                     'width' => '140px',
@@ -195,6 +195,8 @@ use yii\bootstrap\Html;
     }
 
     $('.x-edit').editable({
+         format: 'dd-mm-yyyy',   
+        
         url: function () {
             var d = new $.Deferred();
             if ('value' === 'abc') {

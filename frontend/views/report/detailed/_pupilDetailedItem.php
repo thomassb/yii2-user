@@ -24,23 +24,23 @@ foreach ($model as $key =>  $value) {
         
             <?php
                 if (is_array($level)) {
-                    foreach ($level as $level=> $Statments) {
-                        //    echo print_r($Statment);
-                        if (is_array($Statments)) {
+                    foreach ($level as $level=> $Statements) {
+                        //    echo print_r($Statement);
+                        if (is_array($Statements)) {
                               echo '<tr ><td  colspan="4"><b>'.$level.'</b></td></tr>';
-                            foreach ($Statments as $statment){
+                            foreach ($Statements as $statment){
                                  
                             echo '<tr><td>'.$statment['StatementText'].'</td> '
-                                    . '<td>'.$statment['ConsolidatedDate'].'</td> '
-                                    . '<td>'.$statment['AchievedDate'].'</td> '
-                                    . '<td>'.$statment['PartiallyDate'].'</td> </tr>';
+                                    . '<td>'.\Yii::$app->formatter->asDatetime($statment['PartiallyDate'], "php:d-m-Y") .'</td> '
+                                    . '<td>'.\Yii::$app->formatter->asDatetime($statment['AchievedDate'], "php:d-m-Y").'</td> '
+                                    . '<td>'.\Yii::$app->formatter->asDatetime($statment['ConsolidatedDate'], "php:d-m-Y").'</td> </tr>';
                             }
                         } else {
                             //Strand name
-                              echo '<tr class="warning"><td>'.$Statments.'</td>'
-                                     . ' <td>Consolidated</td> '
+                              echo '<tr class="warning"><td>'.$Statements.'</td>'
+                                     . ' <td>Partially</td> '
                                     . '<td>Achieved</td> '
-                                    . '<td>Partially</td></tr>';
+                                    . '<td>Consolidated</td></tr>';
                         }
                     }
                 } else {

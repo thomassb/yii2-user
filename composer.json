@@ -20,7 +20,7 @@
         "yiisoft/yii2-swiftmailer": "*",
         "kartik-v/yii2-widgets": "*",
         "dmstr/yii2-adminlte-asset": "2.*",
-        "dektrium/yii2-user": "0.9.*@dev",
+        "dektrium/yii2-user": "^0.9.12",
         "kartik-v/yii2-dynagrid": "@dev",
         "kartik-v/yii2-mpdf": "*",
         "kartik-v/yii2-editable": "*",
@@ -28,7 +28,8 @@
         "kartik-v/yii2-date-range": "*",
         "kartik-v/yii2-export": "@dev",
         "phpoffice/phpexcel": "^1.8",
-        "rmrevin/yii2-fontawesome": "~2.17"
+        "rmrevin/yii2-fontawesome": "~2.17",
+        "dektrium/yii2-rbac": "1.0.0-alpha@dev"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",

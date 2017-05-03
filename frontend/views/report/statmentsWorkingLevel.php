@@ -13,7 +13,7 @@
 //use yii\helpers\Url;
 use common\widgets\ReportListView;
 
-$this->title = Yii::t('app', 'All statments within Level');
+$this->title = Yii::t('app', 'All statements within Level');
 $this->params['breadcrumbs'][] = Yii::t('app', 'Reports');
 
 $this->params['breadcrumbs'][] = $this->title;

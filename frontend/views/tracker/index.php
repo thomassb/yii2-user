@@ -63,7 +63,7 @@ $this->registerJs("
         $('.x-edit').editable();
     });
 
-$('#statment-search').click(function(){
+$('#statement-search').click(function(){
 if(!$('#formreport-pupilid').val()||
                                 !$('#formreport-levelid').val()||
                                !$('#formreport-strandid').val()||

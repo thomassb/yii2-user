@@ -188,7 +188,7 @@ HTML;
             </div>
             <div class="row"><div class="col-md-6">
                     <div class="form-group">
-                        <?= Html::button('Search', ['class' => 'btn btn-primary', 'id' => 'statment-search']) ?>
+                        <?= Html::button('Search', ['class' => 'btn btn-primary', 'id' => 'statement-search']) ?>
                     </div>
                 </div>
             </div>
@@ -215,7 +215,7 @@ $this->registerJs("
         $('.x-edit').editable();
     });
 
-$('#statment-search').click(function(){
+$('#statement-search').click(function(){
 if(!$('#statements-pupilid').val()||
                                 !$('#statements-levelid').val()||
                                !$('#statements-strandid').val()||

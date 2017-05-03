@@ -26,7 +26,7 @@ use yii\helpers\Html;
                     Html::a('Read More', ['bulletins/view', 'id' => $model->id], [ 'class' => 'btn btn-primary btn-xs']
                     ) : '';
             ?><?php
-            if (Yii::$app->user->can("bulletins")) {
+            if (Yii::$app->user->can("EditBulletins")) {
                 echo ' ';
                 echo Html::a('Edit', ['bulletins/update', 'id' => $model->id], [ 'class' => 'btn btn-success btn-xs']);
                 echo ' ' . Html::a('Delete', ['bulletins/delete', 'id' => $model->id], [ 'class' => 'btn btn-danger btn-xs', 'data-confirm' => 'Are You sure', 'data-method' => 'post']);

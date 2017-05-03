@@ -21,7 +21,7 @@ class Tracker
     {
         return [
             [['ID', 'PupilID', 'StatementID','StrandID','LevelID'], 'integer'],
-            [['PartiallyDate', 'AchievedDate', 'ConsolidatedDate','StatmentText'], 'safe'],
+            [['PartiallyDate', 'AchievedDate', 'ConsolidatedDate','StatementText'], 'safe'],
         ];
     }
 

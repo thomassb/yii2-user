@@ -16,7 +16,7 @@ foreach ($model['levels'] as $key=>$subject) {
         . '<td>Starting Level</td><td>Date</td></tr>';
     foreach ($subject as $level) {
          echo '<tr><td>' . $level['strand'] . '</td> '
-        . '<td>' . $level['Level'] . '</td> <td>' . ($level['Date']=='0000-00-00 00:00:00'?'':\Yii::$app->formatter->asDate($level['Date'],'php:Y-m-d')) . '</td></tr>';
+        . '<td>' . $level['Level'] . '</td> <td>' . ($level['Date']=='0000-00-00 00:00:00'?'':\Yii::$app->formatter->asDate($level['Date'],'php:d-m-Y')) . '</td></tr>';
     }
        
   //  }

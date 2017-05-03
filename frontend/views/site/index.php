@@ -16,18 +16,20 @@ $this->title = 'Dashboard';
                 <!-- tools box -->
                 <div class="pull-right box-tools">
                     <!-- button with a dropdown -->
-<?php if (Yii::$app->user->can("bulletins")) { ?>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown">
-                                <i class="fa fa-bars"></i></button>
-                            <ul class="dropdown-menu pull-right" role="menu">
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-bars"></i></button>
+                        <ul class="dropdown-menu pull-right" role="menu">
+                            <?php if (Yii::$app->user->can("EditBulletins")) { ?>   
                                 <li><?= Html::a('New bulletin', ['bulletins/create']); ?></li>
                                 <li class="divider"></li>
-                                <li><?= Html::a('View bulletins', ['bulletins']); ?></li>
+                            <?php }; ?>
+                            <li><?= Html::a('View bulletins', ['bulletins']); ?></li>
 
-                            </ul>
-                        </div>
-<?php }; ?>
+                        </ul>
+                    </div>
+
                     <button type="button" class="btn btn-success btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
                     </button>
                     <button type="button" class="btn btn-success btn-sm" data-widget="remove"><i class="fa fa-times"></i>

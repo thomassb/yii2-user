@@ -119,7 +119,7 @@ class Pupils extends \yii\db\ActiveRecord {
     }
 
     public function getFullName() {
-        return $this->FirstName . ' ' . $this->LastName . ' (' . $this->class->ClassName . ')';
+        return trim($this->FirstName) . ' ' . trim($this->LastName) . ' (' . trim($this->class->ClassName) . ')';
     }
 
     public static function PupilList($classID = null) {

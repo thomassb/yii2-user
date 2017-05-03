@@ -24,21 +24,21 @@ foreach ($model as $key => $value) {
 
             <?php
             if (is_array($level)) {
-  echo '<tr class="warning"><td><b>' . $level['Strand']['strandText'] . '</b> Current Level: ' . $level['Strand']['level'] . '</td>'
-                        . ' <td>Consolidated</td> '
+  echo '<tr class="warning"><td><b>' . $level['Strand']['strandText'] . '</b> Working in Level: ' . $level['Strand']['level'] . '</td>'
+                        . ' <td>Partially</td> '
                         . '<td>Achieved</td> '
-                        . '<td>Partially</td></tr>';
-                foreach ($level as $skey=>$Statments) {
-                    //    print_r($Statments);
-                    if (is_array($Statments)&& $skey!='Strand' ) {
+                        . '<td>Consolidated</td></tr>';
+                foreach ($level as $skey=>$Statements) {
+                    //    print_r($Statements);
+                    if (is_array($Statements)&& $skey!='Strand' ) {
 
-                        echo '<tr><td>' . $Statments['StatementText'] . '</td> '
-                        . '<td>' . $Statments['ConsolidatedDate'] . '</td> '
-                        . '<td>' . $Statments['AchievedDate'] . '</td> '
-                        . '<td>' . $Statments['PartiallyDate'] . '</td> </tr>';
+                        echo '<tr><td>' . $Statements['StatementText'] . '</td> '
+                        . '<td>' . \Yii::$app->formatter->asDatetime($Statements['PartiallyDate'], "php:d-m-Y")  . '</td> '
+                        . '<td>' . \Yii::$app->formatter->asDatetime($Statements['AchievedDate'], "php:d-m-Y") . '</td> '
+                        . '<td>' . \Yii::$app->formatter->asDatetime($Statements['ConsolidatedDate'], "php:d-m-Y") . '</td> </tr>';
                     } else {
                         //Strand name
-//                        echo '<tr class="warning"><td>' . $Statments . '</td>'
+//                        echo '<tr class="warning"><td>' . $Statements . '</td>'
 //                        . ' <td>Consolidated</td> '
 //                        . '<td>Achieved</td> '
 //                        . '<td>Partially</td></tr>';

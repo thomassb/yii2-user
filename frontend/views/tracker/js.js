@@ -1,4 +1,4 @@
-$('#statment-search').click(function () {
+$('#statement-search').click(function () {
     if (!$('#statements-pupilid').val() ||
             !$('#levelid').val() ||
             !$('#strandid').val() ||

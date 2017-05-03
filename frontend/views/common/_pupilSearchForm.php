@@ -316,7 +316,7 @@ HTML;
 <div class="row">
     <div class="col-md-6">
         <div class="form-group">
-<?= Html::submitButton($buttonText, ['class' => 'btn btn-primary', 'id' => 'statment-search']) ?>
+<?= Html::submitButton($buttonText, ['class' => 'btn btn-primary', 'id' => 'statement-search']) ?>
         </div>
     </div>
 </div>

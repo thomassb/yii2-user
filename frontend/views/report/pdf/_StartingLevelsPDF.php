@@ -36,7 +36,7 @@
                 <tr class="<?= $row ?>">
                     <td><?= $level["strand"] ?></td>
                     <td><?= $level["Level"] ?></td>
-                    <td><?= ($level['Date']=='0000-00-00 00:00:00'?'':\Yii::$app->formatter->asDate($level['Date'],'php:Y-m-d'))?> </td>
+                    <td><?= ($level['Date']=='0000-00-00 00:00:00'?'':\Yii::$app->formatter->asDate($level['Date'],'php:d-m-Y'))?> </td>
                 </tr>
                 <?php
                  $rowodd++;

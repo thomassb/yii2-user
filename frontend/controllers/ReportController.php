@@ -91,6 +91,79 @@ class ReportController extends Controller {
          * This should fall back onto start levels if no max is found.
          */
         $connection = Yii::$app->db;
+        $sqlbase = "select  SubjectID, strandid as id,levelid as lid from
+(SELECT SubjectID, strandid,count(levelid) as c,levelid FROM `PupilStatements`
+                           join Statements on Statements.id = PupilStatements.StatementID
+                           join Strands on Strands.id = Statements.strandid 
+                            join SubjectAreas on SubjectAreas.areaid =  Strands.id";
+        if ($reportForm->subjectID) {
+            $sql = $sqlbase . "
+                            where pupilid = :pupilID and SubjectAreas.subjectid = :subjectID ";
+            if ($reportForm->strandID) {
+                $sql.=' and Strands.id  = ' . intval($reportForm->strandID);
+            }
+
+            if ($reportForm->dateFrom) {
+                $sql.=' and  (consolidateddate between  :startDate and :endDate
+                       or PartiallyDate between  :startDate and :endDate or AchievedDate between  :startDate and :endDate)	
+                       group by SubjectID, strandid) as t
+where t.c >=9';
+                $command = $connection->createCommand($sql);
+                $command->bindValue(':startDate', $reportForm->dateFrom);
+                $command->bindValue(':endDate', $reportForm->dateTo);
+            } else {
+                $sql.=' and consolidateddate is not null and consolidateddate >0  group by SubjectID, strandid) as t
+where t.c >=9;';
+                $command = $connection->createCommand($sql);
+            }
+            $command->bindValue(':subjectID', $reportForm->subjectID);
+        } else {
+            $sql = $sqlbase . ' where pupilid = :pupilID';
+            if ($reportForm->dateFrom) {
+                $sql.=' and  (consolidateddate between  :startDate and :endDate
+                       or PartiallyDate between  :startDate and :endDate or AchievedDate between  :startDate and :endDate)	
+                       group by SubjectID, strandid) as t
+where t.c >=9';
+                $command = $connection->createCommand($sql);
+                $command->bindValue(':startDate', $reportForm->dateFrom);
+                $command->bindValue(':endDate', $reportForm->dateTo);
+            } else {
+                //  $command = $connection->createCommand('CALL GetPupilStatmentMaxLevels(:pupilID)');
+                $sql.=' and consolidateddate is not null and consolidateddate >0
+                       group by SubjectID, strandid) as t
+where t.c >=9';
+                $command = $connection->createCommand($sql);
+            }
+        }
+//        $sql = "	select  SubjectID, strandid as id,levelid as lid from
+//(SELECT SubjectID, strandid,count(levelid) as c,levelid FROM `PupilStatements`
+//                           join Statements on Statements.id = PupilStatements.StatementID
+//                           join Strands on Strands.id = Statements.strandid 
+//                            join SubjectAreas on SubjectAreas.areaid =  Strands.id
+// where pupilid = :pupilID 
+//and `ConsolidatedDate` >0 
+//
+//group by SubjectID, strandid, levelid) as t
+//where t.c >=9
+//";
+//        $command = $connection->createCommand($sql);
+        $command->bindValue(':pupilID', $pupilid);
+        $maxlevels = $command->queryAll();
+
+        return $maxlevels;
+    }
+
+    public static function _MaxLevelsorig($reportForm, $pupilid) {
+        /* SELECT  Strands.id ,max(levelid) as lid, SubjectAreas.SubjectID  FROM `PupilStatements` 
+          join Statements on Statements.id = PupilStatements.StatementID
+          join Strands on Strands.id = Statements.strandid
+          JOIN SubjectAreas ON SubjectAreas.areaid = Strands.ID
+          where pupilid = '1' and consolidateddate is not null and consolidateddate >0 group by SubjectAreas.SubjectID, strandid
+         * 
+         * 
+         * This should fall back onto start levels if no max is found.
+         */
+        $connection = Yii::$app->db;
         $sqlbase = "SELECT Strands.id ,max(levelid) as lid, SubjectAreas.SubjectID FROM `PupilStatements`
                            join Statements on Statements.id = PupilStatements.StatementID
                            join Strands on Strands.id = Statements.strandid 
@@ -130,7 +203,18 @@ class ReportController extends Controller {
                 $command = $connection->createCommand($sql);
             }
         }
+        $sql = "	select  SubjectID, strandid as id,levelid as lid from
+(SELECT SubjectID, strandid,count(levelid) as c,levelid FROM `PupilStatements`
+                           join Statements on Statements.id = PupilStatements.StatementID
+                           join Strands on Strands.id = Statements.strandid 
+                            join SubjectAreas on SubjectAreas.areaid =  Strands.id
+ where pupilid = :pupilID 
+and `ConsolidatedDate` >0 
 
+group by SubjectID, strandid, levelid) as t
+where t.c >=9
+";
+        $command = $connection->createCommand($sql);
         $command->bindValue(':pupilID', $pupilid);
         $maxlevels = $command->queryAll();
 
@@ -145,11 +229,11 @@ class ReportController extends Controller {
           (SELECT  count(PupilStatements.id )
           FROM `PupilStatements` join Statements on Statements.id = PupilStatements.StatementID
           where strandid =vastrandid and levelid =valevelid and pupilid= vapupilid and consolidateddate is not null and consolidateddate >0
-          GROUP BY strandid, levelid) as statmentcount,
+          GROUP BY strandid, levelid) as statementcount,
 
           (SELECT  count(id )
           FROM `Statements` where strandid =vastrandid and levelid =valevelid
-          GROUP BY strandid, levelid) as totalstatments, (select statmentcount)/(select totalstatments)  as perc ,
+          GROUP BY strandid, levelid) as totalstatements, (select statementcount)/(select totalstatements)  as perc ,
           (
           SELECT LevelText
           FROM `LevelsText`
@@ -173,18 +257,18 @@ class ReportController extends Controller {
             $sql.=" (SELECT  count(PupilStatements.id )
                     FROM `PupilStatements` join Statements on Statements.id = PupilStatements.StatementID 
                     where strandid =:strandid and levelid =:levelID and pupilid= :pupilID and consolidateddate is not null and consolidateddate >0
-                    GROUP BY strandid, levelid) as statmentcount,";
+                    GROUP BY strandid, levelid) as statementcount,";
         } else {
             $sql.=" ( select(
                     SELECT  count(PupilStatements.id )
                     FROM `PupilStatements` join Statements on Statements.id = PupilStatements.StatementID 
                     where strandid =:strandid and levelid =:levelID and pupilid= :pupilID and consolidateddate is not null and consolidateddate <= :dateTo
-                    GROUP BY strandid, levelid)) as statmentcount,";
+                    GROUP BY strandid, levelid)) as statementcount,";
         }
 
         $sql.=" (SELECT  count(id )
                 FROM `Statements` where strandid =:strandid and levelid =:levelID
-                GROUP BY strandid, levelid) as totalstatments, (select statmentcount)/(select totalstatments)  as perc ,
+                GROUP BY strandid, levelid) as totalstatements, (select statementcount)/(select totalstatements)  as perc ,
                 (
                 SELECT LevelText
                 FROM `LevelsText`
@@ -232,28 +316,89 @@ class ReportController extends Controller {
     private function _SummaryDataToArray($pupilRange, $reportForm) {
         //$connection = Yii::$app->db;
         $pupilData = [];
+        $subjectStands = \frontend\models\SubjectAreas::find()->all();
+        $strandArray = ArrayHelper::map(\frontend\models\Strands::find()->all(), 'ID', 'StrandText');
+        $levelsArray = ArrayHelper::map(\frontend\models\Levels::find()->all(), 'ID', 'LevelText');
+        $subjectArray = ArrayHelper::map(\frontend\models\Subjects::find()->all(), 'ID', 'Subject');
         foreach ($pupilRange as $pupilid) {
+
             $pupil = \frontend\models\Pupils::findOne($pupilid);
+            $startlingLevels = ArrayHelper::map(\frontend\models\PupilStartingLevel::find()->where(['PupilID' => $pupilid])->all(), 'StrandID', 'StartingLevel');
+
             if ($pupil) {
-                $maxlevels = $this->_MaxLevels($reportForm, $pupilid);
-                // print_r($maxlevels);
-                if (count($maxlevels) == 0) {
-                    $blank = ['name' => $pupil->FullName, 'StrandText' => '-', 'thelevel' => '-', 'pid' => $pupilid];
-                    $pupilData[$pupilid]['No Records'][] = $blank;
-                } else {
-                    foreach ($maxlevels as $level) {
-//                        $command = $connection->createCommand('CALL GetPupilCurrentLevel(:pupilID,:strandid,:levelid)');
-//                        $command->bindValue(':pupilID', $pupilid);
-//                        $command->bindValue(':strandid', $level['id']);
-//                        $command->bindValue(':levelid', $level['lid']);
-//                        $levels = $command->queryAll();
-                        $levels = $this->GetPupilCurrentLevel($pupilid, $level['id'], $level['lid'], $level['SubjectID']);
-                        $levels[0]['name'] = $pupil->FullName;
-                        $pupilData [$pupilid][$levels[0]['Subject']][] = $levels[0];
+
+
+                $_maxlevels = $this->_MaxLevels($reportForm, $pupilid);
+
+
+                $maxlevels = [];
+
+                foreach ($_maxlevels as $_ml) {
+
+                    $maxlevels[$_ml['SubjectID'] . ':' . $_ml['id']] = $_ml['lid'];
+                }
+
+                foreach ($subjectStands as $subjectStand) {
+                    $maxlevel = isset($maxlevels[$subjectStand->SubjectID . ':' . $subjectStand->AreaID]) ? $maxlevels[$subjectStand->SubjectID . ':' . $subjectStand->AreaID] : false;
+
+                    if ($maxlevel === false) {
+                        //  echo $subjectStand->SubjectID . ':' . $subjectStand->AreaID;
+                        $maxlevel = isset($startlingLevels[$subjectStand->AreaID]) ? $startlingLevels[$subjectStand->AreaID] + 1 : 1;
+                        //echo'lev: '. $maxlevel;
+                    }
+//                if ($maxlevel) {
+//                    $level = (isset($levelsArray[$maxlevel])) ? ['ID' => $maxlevel, 'LevelText' => $levelsArray[$maxlevel]] : false;
+//                    /*
+//                     * Statments should contain all the statements for that level and strand with pupil data
+//                     */
+//
+//                    $connection = Yii::$app->db;
+//                    $sql = "Select  Statements.id, StatementText, StrandID, LevelID, PupilID, StatementID, PartiallyDate, AchievedDate, 
+//            ConsolidatedDate from Statements left join PupilStatements on Statements.id = PupilStatements.StatementID and PupilID= :pupilID "
+//                            . "where StrandID = :StrandID and LevelID=:LevelID";
+//                    $command = $connection->createCommand($sql);
+//                    $command->bindValue(':pupilID', $pupilID);
+//                    $command->bindValue(':StrandID', $subjectStand->AreaID);
+//                    $command->bindValue(':LevelID', $level['ID']);
+//
+//                    $statements = $command->queryAll();
+//
+//                    // $statements = \frontend\models\Statements::find()->where(['StrandID' => $subjectStand->AreaID, 'LevelID' => $level->ID])->all();
+//                } else {
+//                    $statements = '';
+
+                    if ($maxlevel) {
+                        $levels = $this->GetPupilCurrentLevel($pupilid, $subjectStand->AreaID, $maxlevel, $subjectStand->SubjectID);
+                        if ($levels) {
+
+                            $levels[0]['name'] = $pupil->FullName;
+                            $pupilData [$pupilid][$levels[0]['Subject']][] = $levels[0];
+                        }
                     }
                 }
             }
         }
+        /**/
+//                $maxlevels = $this->_MaxLevels($reportForm, $pupilid);
+//                // print_r($maxlevels);
+//                if (count($maxlevels) == 0) {
+//                    $blank = ['name' => $pupil->FullName, 'StrandText' => '-', 'thelevel' => '-', 'pid' => $pupilid];
+//                    $pupilData[$pupilid]['No Records'][] = $blank;
+//                } else {
+//                    foreach ($maxlevels as $level) {
+//                        
+////                        $command = $connection->createCommand('CALL GetPupilCurrentLevel(:pupilID,:strandid,:levelid)');
+////                        $command->bindValue(':pupilID', $pupilid);
+////                        $command->bindValue(':strandid', $level['id']);
+////                        $command->bindValue(':levelid', $level['lid']);
+////                        $levels = $command->queryAll();
+//                        $levels = $this->GetPupilCurrentLevel($pupilid, $level['id'], $level['lid'], $level['SubjectID']);
+//                        $levels[0]['name'] = $pupil->FullName;
+//                        $pupilData [$pupilid][$levels[0]['Subject']][] = $levels[0];
+//                    }
+//                }
+//            }
+//        }
 //        print_r($pupilData);
 //        exit;
         return $pupilData;
@@ -375,8 +520,9 @@ class ReportController extends Controller {
         }
         $sql .='  (:pupilID is null or Pupils.id =:pupilID) 
                 and (:classID is null or Pupils.classid=:classID) 
-                and (:schoolID is null or Pupils.schoolid=:schoolID)
+              
                 and (:subjectID is null or Subjects.ID=:subjectID )
+                and (PartiallyDate>0 and 	AchievedDate>0 and	ConsolidatedDate>0)
                 order by pupilID, strandID';
 
 
@@ -391,7 +537,7 @@ class ReportController extends Controller {
 //        }
 
         $command->bindValue(':classID', $classID);
-        $command->bindValue(':schoolID', \Yii::$app->user->identity->SchoolID);
+        //$command->bindValue(':schoolID', \Yii::$app->user->identity->SchoolID);
         $command->bindValue(':subjectID', $subjectID);
         $command->bindValue(':pupilID', $pupilid);
 
@@ -403,19 +549,19 @@ class ReportController extends Controller {
 //         print_r(array_slice($detailedReport,0,10));
 //        exit;
         $levelsArray = ArrayHelper::map(\frontend\models\Levels::find()->all(), 'ID', 'LevelText');
-        foreach ($detailedReport as $statment) {
+        foreach ($detailedReport as $statement) {
 
-            $pupildata[$statment['PupilID']][$statment['Subject']]['PupilName'] = $statment['FirstName'] . ' ' . $statment['LastName'];
+            $pupildata[$statement['PupilID']][$statement['Subject']]['PupilName'] = $statement['FirstName'] . ' ' . $statement['LastName'];
 
-            $pupildata[$statment['PupilID']][$statment['Subject']][$statment['StrandID']]['Strand'] = $statment['StrandText'];
+            $pupildata[$statement['PupilID']][$statement['Subject']][$statement['StrandID']]['Strand'] = $statement['StrandText'];
 
-            $pupildata[$statment['PupilID']]
-                    [$statment['Subject']]
-                    [$statment['StrandID']][$levelsArray[$statment['LevelID']]]
-                    [$statment['StatementID']] = ['StatementText' => $statment['StatementText'],
-                'ConsolidatedDate' => $statment['ConsolidatedDate'],
-                'AchievedDate' => $statment['AchievedDate'],
-                'PartiallyDate' => $statment['PartiallyDate'],];
+            $pupildata[$statement['PupilID']]
+                    [$statement['Subject']]
+                    [$statement['StrandID']][$levelsArray[$statement['LevelID']]]
+                    [$statement['StatementID']] = ['StatementText' => $statement['StatementText'],
+                'ConsolidatedDate' => $statement['ConsolidatedDate'],
+                'AchievedDate' => $statement['AchievedDate'],
+                'PartiallyDate' => $statement['PartiallyDate'],];
         }
 
         return $pupildata;
@@ -565,7 +711,7 @@ class ReportController extends Controller {
 
         $output = "$title\n";
         $output.= "$filter\n";
-        $output.= "\"Pupil\",\"Subject\",\"Stand\",\"Level\",\"Statment\",\"Consolidated\",\"Achieved\",\"Partially\"\n";
+        $output.= "\"Pupil\",\"Subject\",\"Stand\",\"Level\",\"Statement\",\"Partially\",\"Achieved\",\"Consolidated\"\n";
         foreach ($provider->getModels() as $subject) {
             foreach ($subject as $subkeyname => $pupil) {
                 $name = (isset($pupil['PupilName']) ? $pupil['PupilName'] : '');
@@ -577,13 +723,13 @@ class ReportController extends Controller {
                         foreach ($p as $leveltext => $strand) {
                             if (is_array($strand)) {
 
-                                foreach ($strand as $statment) {
-                                    $StamentText = (isset($statment['StatementText']) ? $statment['StatementText'] : '');
-                                    $Consolidated = (isset($statment['ConsolidatedDate']) ? $statment['ConsolidatedDate'] : '');
-                                    $Achieved = (isset($statment['AchievedDate']) ? $statment['AchievedDate'] : '');
-                                    $Partially = (isset($statment['PartiallyDate']) ? $statment['PartiallyDate'] : '');
+                                foreach ($strand as $statement) {
+                                    $StamentText = (isset($statement['StatementText']) ? $statement['StatementText'] : '');
+                                    $Consolidated = (isset($statement['ConsolidatedDate']) ? $statement['ConsolidatedDate'] : '');
+                                    $Achieved = (isset($statement['AchievedDate']) ? $statement['AchievedDate'] : '');
+                                    $Partially = (isset($statement['PartiallyDate']) ? $statement['PartiallyDate'] : '');
                                     $level = (isset($leveltext) ? $leveltext : '');
-                                    $output.= "\"{$name}\",\"{$subjectName}\",\"{$StrandText}\",\"{$level}\",\"{$StamentText}\",\"{$Consolidated}\",\"{$Achieved}\",\"{$Partially}\"\n";
+                                    $output.= "\"{$name}\",\"{$subjectName}\",\"{$StrandText}\",\"{$level}\",\"{$StamentText}\",\"{$Partially}\",\"{$Achieved}\",\"{$Consolidated}\"\n";
                                 }
                             }
                         }
@@ -721,7 +867,7 @@ class ReportController extends Controller {
         ]);
     }
 
-    public function actionCurrentLevelStatments() {
+    public function actionCurrentLevelStatements() {
         $queryParams = Yii::$app->request->getQueryParams();
         $reportForm = new formReport();
         $reportForm->load(Yii::$app->request->getQueryParams());
@@ -791,7 +937,7 @@ class ReportController extends Controller {
     private function _CurrentLevelStatments($pupilIDs) {
         /*
          * For each of the subject strands find the pupils current level, if no level set do lowest level.
-         * Find all statments in the current level populated with any data already added.
+         * Find all statements in the current level populated with any data already added.
          */
         $subjectStands = \frontend\models\SubjectAreas::find()->all();
         $data = [];
@@ -810,25 +956,27 @@ class ReportController extends Controller {
 
 
             $_maxlevels = $this->_MaxLevels($form, $pupilID);
-            $maxlevels = [];
 
+
+            $maxlevels = [];
+            $levels = [];
             foreach ($_maxlevels as $_ml) {
+                $levels[] = $this->GetPupilCurrentLevel($pupilID, $_ml['id'], $_ml['lid'], $_ml['SubjectID']);
                 $maxlevels[$_ml['SubjectID'] . ':' . $_ml['id']] = $_ml['lid'];
             }
-//            print_r($maxlevels);
-//            exit;
+
             foreach ($subjectStands as $subjectStand) {
                 $maxlevel = isset($maxlevels[$subjectStand->SubjectID . ':' . $subjectStand->AreaID]) ? $maxlevels[$subjectStand->SubjectID . ':' . $subjectStand->AreaID] : false;
 
                 if (!$maxlevel) {
                     //  echo $subjectStand->SubjectID . ':' . $subjectStand->AreaID;
-                    $maxlevel = isset($startlingLevels[$subjectStand->AreaID]) ? $startlingLevels[$subjectStand->AreaID] : 1;
+                    $maxlevel = isset($startlingLevels[$subjectStand->AreaID]) ? $startlingLevels[$subjectStand->AreaID] + 1 : 1;
                     //echo'lev: '. $maxlevel;
                 }
                 if ($maxlevel) {
                     $level = (isset($levelsArray[$maxlevel])) ? ['ID' => $maxlevel, 'LevelText' => $levelsArray[$maxlevel]] : false;
                     /*
-                     * Statments should contain all the statments for that level and strand with pupil data
+                     * Statments should contain all the statements for that level and strand with pupil data
                      */
 
                     $connection = Yii::$app->db;
@@ -840,20 +988,20 @@ class ReportController extends Controller {
                     $command->bindValue(':StrandID', $subjectStand->AreaID);
                     $command->bindValue(':LevelID', $level['ID']);
 
-                    $statments = $command->queryAll();
+                    $statements = $command->queryAll();
 
-                    // $statments = \frontend\models\Statements::find()->where(['StrandID' => $subjectStand->AreaID, 'LevelID' => $level->ID])->all();
+                    // $statements = \frontend\models\Statements::find()->where(['StrandID' => $subjectStand->AreaID, 'LevelID' => $level->ID])->all();
                 } else {
-                    $statments = '';
+                    $statements = '';
                 }
 //                $data[$pupilID][] = ['pupilName' => $pupil->FullName,
 //                    "subjectName" => $subjectStand->subject->Subject, "subject" => $subjectStand->SubjectID,
 //                    "strandName" => isset($strandArray[$subjectStand->AreaID]) ? $strandArray[$subjectStand->AreaID] : '',
 //                    "strand" => $subjectStand->AreaID, "maxLevelID" => $maxlevel, "level" => (isset($level['LevelText'])) ? $level['LevelText'] : '',
-//                    "statments" => $statments];
+//                    "statements" => $statements];
 
-                if (is_array($statments)) {
-                    foreach ($statments as $statment) {
+                if (is_array($statements)) {
+                    foreach ($statements as $statement) {
 
 
                         $standText = isset($strandArray[$subjectStand->AreaID]) ? $strandArray[$subjectStand->AreaID] : '';
@@ -867,10 +1015,10 @@ class ReportController extends Controller {
                         $pupildata[$pupilID]
                                 [$subjectName]
                                 [$subjectStand->AreaID]
-                                [$statment['id']] = ['StatementText' => $statment['StatementText'],
-                            'ConsolidatedDate' => $statment['ConsolidatedDate'],
-                            'AchievedDate' => $statment['AchievedDate'],
-                            'PartiallyDate' => $statment['PartiallyDate'],
+                                [$statement['id']] = ['StatementText' => $statement['StatementText'],
+                            'ConsolidatedDate' => $statement['ConsolidatedDate'],
+                            'AchievedDate' => $statement['AchievedDate'],
+                            'PartiallyDate' => $statement['PartiallyDate'],
                             "Level" => (isset($level['LevelText'])) ? $level['LevelText'] : ''];
                     }
                 }
@@ -880,18 +1028,18 @@ class ReportController extends Controller {
 //       exit;
         return $pupildata;
         /*
-         * foreach ($detailedReport as $statment) {
-          $pupildata[$statment['PupilID']][$statment['Subject']]['PupilName'] = $statment['FirstName'] . ' ' . $statment['LastName'];
+         * foreach ($detailedReport as $statement) {
+          $pupildata[$statement['PupilID']][$statement['Subject']]['PupilName'] = $statement['FirstName'] . ' ' . $statement['LastName'];
 
-          $pupildata[$statment['PupilID']][$statment['Subject']][$statment['StrandID']]['Strand'] = $statment['StrandText'];
+          $pupildata[$statement['PupilID']][$statement['Subject']][$statement['StrandID']]['Strand'] = $statement['StrandText'];
 
-          $pupildata[$statment['PupilID']]
-          [$statment['Subject']]
-          [$statment['StrandID']]
-          [$statment['StatementID']] = ['StatementText' => $statment['StatementText'],
-          'ConsolidatedDate' => $statment['ConsolidatedDate'],
-          'AchievedDate' => $statment['AchievedDate'],
-          'PartiallyDate' => $statment['PartiallyDate'],];
+          $pupildata[$statement['PupilID']]
+          [$statement['Subject']]
+          [$statement['StrandID']]
+          [$statement['StatementID']] = ['StatementText' => $statement['StatementText'],
+          'ConsolidatedDate' => $statement['ConsolidatedDate'],
+          'AchievedDate' => $statement['AchievedDate'],
+          'PartiallyDate' => $statement['PartiallyDate'],];
           }
          */
     }
@@ -900,7 +1048,7 @@ class ReportController extends Controller {
 
         $output = "$title\n";
         $output.= "$filter\n";
-        $output.= "\"Pupil\",\"Subject\",\"Stand\",\"Level\",\"Statment\",\"Consolidated\",\"Achieved\",\"Partially\"\n";
+        $output.= "\"Pupil\",\"Subject\",\"Stand\",\"Level\",\"Statment\",\"Partially\",\"Achieved\",\"Consolidated\"\n";
         foreach ($provider->getModels() as $subject) {
             foreach ($subject as $subkeyname => $pupil) {
                 $name = (isset($pupil['PupilName']) ? $pupil['PupilName'] : '');
@@ -919,7 +1067,7 @@ class ReportController extends Controller {
                                 $Achieved = (isset($strand['AchievedDate']) ? $strand['AchievedDate'] : '');
                                 $Partially = (isset($strand['PartiallyDate']) ? $strand['PartiallyDate'] : '');
 
-                                $output.= "\"{$name}\",\"{$subjectName}\",\"{$StrandText}\",\"{$LevelText}\",\"{$StamentText}\",\"{$Consolidated}\",\"{$Achieved}\",\"{$Partially}\"\n";
+                                $output.= "\"{$name}\",\"{$subjectName}\",\"{$StrandText}\",\"{$LevelText}\",\"{$StamentText}\",\"{$Partially}\",\"{$Achieved}\",\"{$Consolidated}\"\n";
                             }
                         }
                     }
@@ -1275,11 +1423,12 @@ class ReportController extends Controller {
 //            }
 //        }
 //exit;
-
-
-        header('Content-Type: application/vnd.ms-excel');
         $filename = str_replace(' ', '_', $pupil->FullName) . '_' . date("d-m-Y") . ".xls";
-        header('Content-Disposition: attachment;filename=' . $filename . ' ');
+        //var_dump($filename);
+        header('Content-Type: application/vnd.ms-excel');
+
+
+        header('Content-Disposition: attachment;filename=' . $filename);
         header('Cache-Control: max-age=0');
 
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
@@ -1512,7 +1661,7 @@ class assessmentgridYearData {
         return true;
 //        print_r($dataOut);
 //        exit;
-//        //find all completed statments within acedemic year - link with subject ->where(['pupilid' => $this->pupilID])
+//        //find all completed statements within acedemic year - link with subject ->where(['pupilid' => $this->pupilID])
 //        $s = \frontend\models\PupilStatements::find()->joinWith('statement.strands.subject')->andWhere(['<=', 'ConsolidatedDate', $this->yearDate . self::Summer2TermEnd])->asArray()->all();
 //        print_r($s);
 //        exit;
@@ -1547,7 +1696,7 @@ class assessmentgridYearData {
                 $levels = ReportController::GetPupilCurrentLevel($this->pupilID, $level['id'], $level['lid'], $level['SubjectID'], $reportForm->dateTo);
                 $dataOut[$levels[0]['subjectid'] . ':' . $level['id']] = $levels[0];
 //                $this->CompletedStatmentsPerSubject[$levels[0]['subjectid'] . ':' . $level['id']] = 
-//                        $levels[0]['statmentcount'];
+//                        $levels[0]['statementcount'];
             }
         }
         return $dataOut;
@@ -1577,6 +1726,7 @@ class assessmentgridEYFS {
         $dataOut = [];
         $query = new \yii\db\Query;
 // compose the query
+        // Number of completed statments since they end of the year regargless of level.
         $query->select('count( PupilStatements.id ) as statementcount, strandid, subjectid')
                 ->from('PupilStatements')
                 ->innerJoin('Statements', 'Statements.id = PupilStatements.StatementID')
@@ -1595,7 +1745,7 @@ class assessmentgridEYFS {
         return true;
 //        print_r($dataOut);
 //        exit;
-//        //find all completed statments within acedemic year - link with subject ->where(['pupilid' => $this->pupilID])
+//        //find all completed statements within acedemic year - link with subject ->where(['pupilid' => $this->pupilID])
 //        $s = \frontend\models\PupilStatements::find()->joinWith('statement.strands.subject')->andWhere(['<=', 'ConsolidatedDate', $this->yearDate . self::Summer2TermEnd])->asArray()->all();
 //        print_r($s);
 //        exit;
@@ -1631,7 +1781,7 @@ class assessmentgridEYFS {
                 $levels = ReportController::GetPupilCurrentLevel($this->pupilid, $level['id'], $level['lid'], $level['SubjectID'], $reportForm->dateTo);
                 $dataOut[$levels[0]['subjectid'] . ':' . $level['id']] = $levels[0];
                 $this->CompletedStatmentsPerSubject[$levels[0]['subjectid'] . ':' . $level['id']] = isset($this->CompletedStatmentsPerSubject[$levels[0]['subjectid'] . ':' . $level['id']]) ?
-                        $levels[0]['statmentcount'] + $this->CompletedStatmentsPerSubject[$levels[0]['subjectid'] . ':' . $level['id']] : $levels[0]['statmentcount'];
+                        $levels[0]['statementcount'] + $this->CompletedStatmentsPerSubject[$levels[0]['subjectid'] . ':' . $level['id']] : $levels[0]['statementcount'];
             }
         }
         return $dataOut;

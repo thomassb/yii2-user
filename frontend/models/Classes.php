@@ -42,10 +42,10 @@ class Classes extends \yii\db\ActiveRecord {
             'ClassName' => 'Class Name',
         ];
     }
-    public static function find()
-{
-    return parent::find()->where(['=', self::tableName().'.SchoolID', \Yii::$app->user->identity->SchoolID]);
-}
+//    public static function find()
+//{
+//    return parent::find()->where(['=', self::tableName().'.SchoolID', \Yii::$app->user->identity->SchoolID]);
+//}
 //    public function beforeValidate() {
 //          $this->SchoolID = \Yii::$app->user->identity->SchoolID;
 //        return parent::beforeValidate();
@@ -60,7 +60,8 @@ class Classes extends \yii\db\ActiveRecord {
 
     public static function ClassList() {
         //TODO:: Add school variable 
-        return Classes::findAll(['SchoolID' => \Yii::$app->user->identity->SchoolID, 'active' => 1]);
+     //   return Classes::findAll(['SchoolID' => \Yii::$app->user->identity->SchoolID, 'active' => 1]);
+           return Classes::findAll([ 'active' => 1]);
     }
 
     public function beforeSave($insert) {

@@ -25,6 +25,20 @@ class BulletinsController extends Controller {
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => \yii\filters\AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['create', 'update','delete'],
+                        'roles' => ['EditBulletins'],],
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view'],
+                        'roles' => ['@'],
+                    ],
+                ],
+            ]
         ];
     }
 
@@ -59,6 +73,8 @@ class BulletinsController extends Controller {
      * @return mixed
      */
     public function actionCreate() {
+
+
         $model = new Bulletins(['active' => true]);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {

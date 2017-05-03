@@ -9,11 +9,13 @@ use yii\bootstrap\Html;
         <!-- Sidebar user panel -->
         <div class="user-panel">
             <div class="pull-left image">
-                <?= yii\bootstrap\Html::img('@web/uploads/users/' . \Yii::$app->user->identity->profile->myavatar, ['class' => 'img-circle square-215', 'alt' => "User Image"]) ?>
-
+                <?= Html::img(\Yii::$app->user->identity->profile->getAvatarUrl(230), [
+                    'class' => 'img-rounded img-responsive',
+                    'alt' => \Yii::$app->user->identity->Fullname,
+                ]) ?>
             </div>
             <div class="pull-left info">
-                <p><?= Yii::$app->user->identity->profile->full_name ?></p>
+                <p><?=  Yii::$app->user->identity->Fullname ?></p>
 
                 <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
@@ -49,7 +51,7 @@ use yii\bootstrap\Html;
                             'icon' => 'fa  fa-file',
                             'url' => '#',
                             'items' => [
-                                  ['label' => 'Current Level Statments', 'icon' => 'fa  fa-file', 'url' => ['/report/current-level-statments']],
+                                  ['label' => 'Current Level Statements', 'icon' => 'fa  fa-file', 'url' => ['/report/current-level-statements']],
                                 ['label' => 'Summary Report', 'icon' => 'fa  fa-file', 'url' => ['/report/summary']],
                                 ['label' => 'Detailed Report', 'icon' => 'fa  fa-file', 'url' => ['/report/detailed']],
                                 ['label' => 'Starting Levels', 'icon' => 'fa  fa-file', 'url' => ['/report/starting-level']],
@@ -66,7 +68,7 @@ use yii\bootstrap\Html;
                         ['label' => 'Admin',
                             'icon' => 'fa fa-circle-o',
                             'url' => '#',
-                            'visible' => Yii::$app->user->can("adminrole"),
+                            'visible' => Yii::$app->user->can("admin"),
                             'items' => [
                                 ['label' => 'Targets', 'icon' => 'fa fa-bullseye', 'url' => ['/targets']],
                                 ['label' => 'Classes', 'icon' => 'fa fa-users', 'url' => ['/classes']],

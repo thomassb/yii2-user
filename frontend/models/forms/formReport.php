@@ -24,7 +24,7 @@ class formReport extends Model {
     public $strandID;
     public $displayAllLevels;
     public $levelID;
-    public $displayAllStatments;
+    public $displayAllStatements;
     public $PupilPremium;
 
     /**
@@ -35,7 +35,7 @@ class formReport extends Model {
 
 
             [['useDate'], 'required'],
-            [['classID', 'PupilID', 'pupilIDAjax', 'pupilIDClass', 'subjectID', 'displayAllLevels','displayAllStatments','PupilPremium'], 'integer'],
+            [['classID', 'PupilID', 'pupilIDAjax', 'pupilIDClass', 'subjectID', 'displayAllLevels','displayAllStatements','PupilPremium'], 'integer'],
             [['dateFrom', 'dateTo', '_daterange'], 'safe'],
         ];
     }

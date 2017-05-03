@@ -85,7 +85,7 @@ echo Select2::widget([
 
             <div class="row"><div class="col-md-6">
                     <div class="form-group">
-<?= Html::submitButton('Search', ['class' => 'btn btn-primary', 'id' => 'statment-search']) ?>
+<?= Html::submitButton('Search', ['class' => 'btn btn-primary', 'id' => 'statement-search']) ?>
                     </div>
                 </div>
             </div>

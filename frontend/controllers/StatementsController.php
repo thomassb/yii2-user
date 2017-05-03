@@ -132,7 +132,7 @@ class StatementsController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-    public function actionAjaxStatmentLevels(){
+    public function actionAjaxStatementLevels(){
           $out = [];
         if (isset($_POST['depdrop_parents'])) {
             $parents = $_POST['depdrop_parents'];

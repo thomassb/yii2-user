@@ -31,7 +31,7 @@ class TrackerSave extends Model {
     }
 
     public function save() {
-        //If PupilStatmentID is set we alrady have a row
+        //If PupilStatementID is set we alrady have a row
         //find and update
         if (!$this->validate()) {
             return false;
@@ -39,19 +39,19 @@ class TrackerSave extends Model {
       
         
             
-          $PupilStatment= PupilStatements::findOne(['StatementID'=>$this->StatementID,'PupilID'=>$this->PupilID]);//  $PupilStatment = \frontend\models\PupilStatements::findOne($this->PupilStatementID);
-            if ($PupilStatment) {
+          $PupilStatement= PupilStatements::findOne(['StatementID'=>$this->StatementID,'PupilID'=>$this->PupilID]);//  $PupilStatement = \frontend\models\PupilStatements::findOne($this->PupilStatementID);
+            if ($PupilStatement) {
                 
-                $PupilStatment->{$this->Type} = $this->value;
-                return $PupilStatment->save();
+                $PupilStatement->{$this->Type} = $this->value;
+                return $PupilStatement->save();
                     
             } else {
             //we have to make a new record
-                $NewPupilStatment = new PupilStatements();
-                $NewPupilStatment->{$this->Type} = $this->value;
-                $NewPupilStatment->StatementID = $this->StatementID;
-                $NewPupilStatment->PupilID=$this->PupilID;
-                return $NewPupilStatment->save();
+                $NewPupilStatement = new PupilStatements();
+                $NewPupilStatement->{$this->Type} = $this->value;
+                $NewPupilStatement->StatementID = $this->StatementID;
+                $NewPupilStatement->PupilID=$this->PupilID;
+                return $NewPupilStatement->save();
             }
         
         

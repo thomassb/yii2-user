@@ -140,7 +140,7 @@ class LevelController extends Controller
             $pupilid = $_POST['depdrop_all_params']['formreport-pupilid'];
             $subjectID = $_POST['depdrop_all_params']['formreport-subjectid'];
             if ($parents != null) {
-                $cat_id = $parents[0];
+                $cat_id = $parents;
                 $r = Levels::BaseLineLevels($cat_id, $pupilid,$subjectID);
                 $out = [];
                 foreach ($r as $value) {

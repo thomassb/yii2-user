@@ -145,7 +145,7 @@ HTML;
         </div>  
         <div class="row"><div class="col-md-6">
                 <div class="form-group">
-                    <?= Html::submitButton('Run Report', ['class' => 'btn btn-primary', 'id' => 'statment-search']) ?>
+                    <?= Html::submitButton('Run Report', ['class' => 'btn btn-primary', 'id' => 'statement-search']) ?>
                 </div>
             </div>
         </div>

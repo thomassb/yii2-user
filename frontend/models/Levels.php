@@ -49,38 +49,51 @@ class Levels extends \yii\db\ActiveRecord {
 
     public static function BaseLineLevels($StrandID, $pupilid, $subjectID, $displayall = false) {
         $baselevel = 0;
+      //  $displayall=true;
         if ($displayall === false) {
 //levels all ready entered
-            $l = \frontend\models\PupilStatements::find()->joinWith('statement')->where(['StrandID' => $StrandID, 'PupilID' => $pupilid])
-                    ->orderBy(['LevelID' => SORT_DESC])->asArray()
-                    ->one();
-         
-            $baselevelStatment = (isset($l['statement']['LevelID'])) ? $l['statement']['LevelID'] : 0;
+//            $l = \frontend\models\PupilStatements::find()->joinWith('statement')->andFilterWhere
+//                            (['StrandID' => $StrandID, 'PupilID' => $pupilid])
+//                    ->andFilterWhere(['or',
+//                        ['not', ['PartiallyDate' => 'null']],
+//                        ['not', ['AchievedDate' => 'null']],
+//                        ['not', ['ConsolidatedDate' => 'null']],
+//                    ])
+//                    // ->andFilterWhere(['or','PartiallyDate' => null,'AchievedDate'=> null,'ConsolidatedDate'=> null])
+//                    ->orderBy(['LevelID' => SORT_DESC])->asArray()
+//                    ->one();
+
+            $baselevelStatement = (isset($l['statement']['LevelID'])) ? $l['statement']['LevelID'] : 0;
+            
+            
             //completed level - dont display competed levels
-            //count all statments
+            //count all statements
 
             $calLevel = \frontend\controllers\ReportController::PupilMaxLevel($pupilid, $subjectID, $StrandID);
-            //echo $calLevel;
-            $totalstatments = Statements::find()->where(['StrandID' => $StrandID, 'LevelID' => $calLevel])->count();
-            $completedStatments = PupilStatements::find()->joinWith('statement')->where([ 'PupilID' => $pupilid, 'StrandID' => $StrandID, 'LevelID' => $calLevel])->andWhere(['not', ['ConsolidatedDate' => null]])->count();
-            if ($totalstatments!=0&& $totalstatments == $completedStatments) {
-                $calLevel++;
-            }
-     //   echo $totalstatments. ' '.$completedStatments."\n";
+         //  echo $pupilid, $subjectID, $StrandID , $calLevel;
+//            $totalstatements = Statements::find()->where(['StrandID' => $StrandID, 'LevelID' => $calLevel])->count();
+//            $completedStatements = PupilStatements::find()->joinWith('statement')->where([ 'PupilID' => $pupilid, 'StrandID' => $StrandID, 'LevelID' => $calLevel])->andWhere(['not', ['ConsolidatedDate' => null]])->count();
+//            if ($totalstatements != 0 && $totalstatements == $completedStatements) {
+              
+//            }
+            //   echo $totalstatements. ' '.$completedStatements."\n";
             //starting level
             $startinglevel = PupilStartingLevel::find()->where(['PupilID' => $pupilid, 'StrandID' => $StrandID])->one();
-            $baselevelStarting = (isset($startinglevel->StartingLevel)) ? $startinglevel->StartingLevel : 0;
-           
-            if ($baselevelStatment > $baselevelStarting) {
-                $baselevel = $baselevelStatment;
+            $baselevelStarting = (isset($startinglevel->StartingLevel)) ? $startinglevel->StartingLevel+1 : 0;
+
+            if ($baselevelStatement > $baselevelStarting) {
+                $baselevel = $baselevelStatement;
             } else {
                 $baselevel = $baselevelStarting;
             }
+           
             if ($baselevel < $calLevel) {
                 $baselevel = $calLevel;
             }
         }
-//echo $baselevelStatment.' '.$baselevelStarting.' '.$calLevel;
+      //  print_r($baselevelStatement);
+
+//echo $baselevelStatement.' '.$baselevelStarting.' '.$calLevel;
 
         $r = \frontend\models\Statements::find()->select(['LevelID'])->joinWith('levels')->where(['StrandID' => $StrandID])
                         ->andWhere(['>=', 'Levels.ID', $baselevel])
